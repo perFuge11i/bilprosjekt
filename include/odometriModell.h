@@ -1,7 +1,9 @@
-#ifndef BILPROSJEKT_ODOMETRIMODELL_HPP
-#define BILPROSJEKT_ODOMETRIMODELL_HPP
-
-#include "vektor.hpp"
+#ifndef BILPROSJEKT_ODOMETRIMODELL_H
+#define BILPROSJEKT_ODOMETRIMODELL_H
+/*
+#include <vector>
+#include <math.h>
+#include "vektor.h"
 
 class odometriModell {
 private:
@@ -12,10 +14,11 @@ private:
     float dInner;
     float dOuter;
 
+
     //Hvor bilen skal i m/s
-    vektor trajectory;
+    vektor trajectory(0,0);
     //Hvor langt bilen kjørte i m;
-    vektor distanceTraveled;
+    vektor distanceTraveled(0,0);
 
     void calcualteAngle();
     void calculateR();
@@ -23,7 +26,8 @@ private:
 public:
     odometriModell(const float carLength);
     void calculate(float leftWheelSpeed, float rightWheelSpeed, double dTime);
-    vektor getDistanceTravelled();
-    vektor getTrajectory();
+    std::vector<double> getDistanceTravelled();
+    std::vector<double> getTrajectory();
 };
-#endif //BILPROSJEKT_ODOMETRIMODELL_HPP
+*/
+#endif //BILPROSJEKT_ODOMETRIMODELL_H
