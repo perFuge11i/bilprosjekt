@@ -6,3 +6,5 @@ public:
 private:
 };
 #endif //BILPROSJEKT_HJUL_HPP
+
+HEI!!
