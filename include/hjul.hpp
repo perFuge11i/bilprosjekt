@@ -3,13 +3,13 @@
 
 #include <Motor.hpp>
 
-class Wheel {
+class hjul {
 private:
     Motor& motor;
     float wheelDiameter;
 
 public:
-    Wheel(Motor& motorInstance, float diameter) : motor(motorInstance), wheelDiameter(diameter) {}
+    hjul(Motor& motorInstance, float diameter) : motor(motorInstance), wheelDiameter(diameter) {}
 
     float getSpeed() { // Sett motor rpm basert på lineær hastighet
         // speed = RPM * circumference / 60

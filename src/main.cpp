@@ -1,28 +1,34 @@
 #include <Arduino.h>
+#include <bil.hpp>
+#include <Motor.hpp>
 
-Motor leftMotor(leftMotorPin, leftMotorKp, leftMotorKi, leftMotorKd);
+int leftMotorPin = 1;
+int rightMotorPin = 2;
+
+double leftMotorKp, leftMotorKi, leftMotorKd;
+double rightMotorKp, rightMotorKi, rightMotorKd;
+double directionKp, directionKi, directionKd;
+
+
+/*Motor leftMotor(leftMotorPin, leftMotorKp, leftMotorKi, leftMotorKd);
 Motor rightMotor(rightMotorPin, rightMotorKp, rightMotorKi, rightMotorKd);
 
+odometriModell odometryModel();
+
+bil Car(leftMotor, rightMotor, odometryModel, directionKp, directionKi, directionKd);
+*/
 void setup() {
-    pinMode(MOTOR_PWM_PIN, OUTPUT);
-    pinMode(MOTOR_DIR_PIN1, OUTPUT);
-    pinMode(MOTOR_DIR_PIN2, OUTPUT);
+    pinMode(4, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+    Serial.begin(9600);
 }
 
 void loop() {
+    Serial.print("hA");
+    /*
+    Car.update();
 
-    double linePosition = readLineSensors();
-
-    // Finne target motor rpm for hver motor
-    double leftMotorTargetRPM = calculateTargetRPM(linePosition, "left");
-    double rightMotorTargetRPM = calculateTargetRPM(linePosition, "right");
-
-    //Sette RPM for hver motor
-    leftMotor.setSetPoint(leftMotorSpeedSetpoint); //splitte i 2?
-    rightMotor.setSetPoint(rightMotorSpeedSetpoint);
-
-    // Oppdatere motorene - Oppdatere PID, finne RPM, output til motor driver osvosv
     leftMotor.update();
-    rightMotor.update();
-
-}
+    rightMotor.update();*/
+} //pio device monitor -p /dev/tty.usbmodem101 -b 9600

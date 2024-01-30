@@ -12,7 +12,6 @@ private:
     double rpm;
     double output;
     double setPoint;
-    double Kp, Ki, Kd;
     double aggKp, aggKi, aggKd;
     double consKp, consKi, consKd;
     PID pidController;
@@ -30,7 +29,7 @@ public:
 
     void updatePID() { //Oppdatere pid basert på error
         double error = abs(setPoint - rpm);
-        if (error < noe_error_threshold) { //bytte PID parametre
+        if (error < 10) { //bytte RPM etterhvert
             pidController.SetTunings(consKp, consKi, consKd);
         } else {
             pidController.SetTunings(aggKp, aggKi, aggKd);
@@ -56,7 +55,7 @@ public:
     void update() {
         calculateRPM();
         updatePID();
-        // TODO: Output til motor driver, vent til odemetri
+        // TODO: Output til motor driver
     }
 
     double getRPM() const { //Getter
