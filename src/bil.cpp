@@ -97,3 +97,22 @@ double bil::calculateTargetRPM(double linePosition) {
 
     return targetRPM;
 }
+
+void bil::recordPath() {
+    // Kalle denne i gjevne intervaller
+    storePathPoint();
+}
+
+void bil::storePathPoint() {
+    if (pathIndex < MAX_PATH_POINTS) {
+        PathPoint point;
+        point.leftEncoderCount = leftMotor.getEncoderCount(); // Implement getEncoderCount in motor class
+        point.rightEncoderCount = rightMotor.getEncoderCount();
+        point.leftMotorSpeed = leftMotor.getRPM();
+        point.rightMotorSpeed = rightMotor.getRPM();
+        // Legge til mere senere?
+
+        path[pathIndex] = point;
+        pathIndex++;
+    }
+}

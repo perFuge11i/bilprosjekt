@@ -6,6 +6,7 @@
 #include "linjeDetektor.hpp"
 #include "hjul.hpp"
 #include "Arduino.h"
+#include "baneMinne.hpp"
 
 class bil {
 private:
@@ -25,6 +26,8 @@ private:
     double speedCorrection;
 
     double baseSpeed;
+    trackPoint track[MAXPOINS.hvormyeminneharvi];
+    int trackIndex = 0;
 
     unsigned long lastTime;
     double directionAdjustment;
@@ -36,6 +39,8 @@ public:
     void update();
     double readLineSensors();
     double calculateTargetRPM(double linePosition);
+    void recordTrack();
+    void recordTrackPoint();
 };
 
 #endif //BILPROSJEKT_BIL_HPP
