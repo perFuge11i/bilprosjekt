@@ -11,6 +11,7 @@ public:
     double getLength() const;
     double dotProduct(vektor vektor2) const;
     void scale(const double scalar);
+    void add(const vektor vektor2);
     void transform(const vektor xBasis, const vektor yBasis);
 };
 
