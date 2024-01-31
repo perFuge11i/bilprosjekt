@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <PID_v1.h>
 
-class Motor {
+class motor {
 private:
     int encoderPin;
     volatile long pulseCount;
@@ -17,11 +17,10 @@ private:
     PID pidController;
 
 public:
-    Motor(int pin, double cKp, double cKi, double cKd, double aKp, double aKi, double aKd) :
+    Motor(int pin, double cKp, double cKi, double cKd) :
             encoderPin(pin), pulseCount(0), lastMeasurement(0),
             rpm(0), output(0), setPoint(0),
             consKp(cKp), consKi(cKi), consKd(cKd),
-            aggKp(aKp), aggKi(aKi), aggKd(aKd),
             pidController(&rpm, &output, &setPoint, consKp, consKi, consKd, DIRECT) {
         pinMode(encoderPin, INPUT);
         pidController.SetMode(AUTOMATIC);

@@ -12,8 +12,8 @@ private:
     vektor position;
 
 public:
-    linjeDetektor(const float carLength_, const float arrayWidth_);
-    void calculate(const vektor carPosition, const vektor carTrajectory);
-    vektor getPosition() const;
+    linjeDetektor(const float& carLength_, const float& arrayWidth_);
+    void calculate(const vektor& carPosition, const vektor& carTrajectory);
+    vektor& getPosition();
 };
 #endif //BILPROSJEKT_LINJEDETEKTOR_HPP

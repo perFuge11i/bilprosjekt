@@ -2,7 +2,7 @@
 #include <math.h>
 #include "vektor.hpp"
 
-odometriModell::odometriModell(const float carWidth) : trajectory(0,0), distanceTraveled(0,0){
+odometriModell::odometriModell(const float& carWidth) : trajectory(0,0), distanceTraveled(0,0){
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
     dWheel = carWidth/2;
 }
@@ -15,21 +15,21 @@ void odometriModell::calculateR() {
     r = dInner/angle+dWheel;
 }
 
-void odometriModell::calculate(float leftWheelSpeed, float rightWheelSpeed, double dTime) {
+void odometriModell::calculate(const float& leftWheelSpeed, const float& rightWheelSpeed, const double& dTime) {
 
-    bool turningLeft = 0;
+    bool turningLeft;
     //Finner ut hvilket hjul som er innerst/ytterst i buen
     if (leftWheelSpeed < rightWheelSpeed) {
         //Kjører til venstre
         dInner = leftWheelSpeed*dTime;
         dOuter = rightWheelSpeed*dTime;
-        turningLeft = 1;
+        turningLeft = true;
 
     } else if (leftWheelSpeed > rightWheelSpeed) {
         //Kjører til hoyre
         dInner = rightWheelSpeed*dTime;
         dOuter = leftWheelSpeed*dTime;
-        turningLeft = 0;
+        turningLeft = false;
 
     } else {
         //Kjører rett frem
@@ -71,11 +71,11 @@ void odometriModell::calculate(float leftWheelSpeed, float rightWheelSpeed, doub
     trajectory.transform(basisX,basisY);
 }
 
-vektor odometriModell::getDistanceTravelled() {
+vektor& odometriModell::getDistanceTravelled() {
     return distanceTraveled;
 }
 
-vektor odometriModell::getTrajectory() {
+vektor& odometriModell::getTrajectory() {
     return trajectory;
 }
 

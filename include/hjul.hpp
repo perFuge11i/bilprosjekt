@@ -1,15 +1,15 @@
 #ifndef BILPROSJEKT_HJUL_HPP
 #define BILPROSJEKT_HJUL_HPP
 
-#include <Motor.hpp>
+#include <motor.hpp>
 
 class hjul {
 private:
-    Motor& motor;
+    motor motor;
     float wheelDiameter;
 
 public:
-    hjul(Motor& motorInstance, float diameter) : motor(motorInstance), wheelDiameter(diameter) {}
+    hjul(float diameter) : motor(0,0,0,0), wheelDiameter(diameter) {}
 
     float getSpeed() { // Sett motor rpm basert på lineær hastighet
         // speed = RPM * circumference / 60

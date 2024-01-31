@@ -21,9 +21,9 @@ private:
     void calculateR();
 
 public:
-    odometriModell(const float carWidth);
-    void calculate(float leftWheelSpeed, float rightWheelSpeed, double dTime);
-    vektor getDistanceTravelled();
-    vektor getTrajectory();
+    odometriModell(const float& carWidth);
+    void calculate(const float& leftWheelSpeed, const float& rightWheelSpeed, const double& dTime);
+    vektor& getDistanceTravelled();
+    vektor& getTrajectory();
 };
 #endif //BILPROSJEKT_ODOMETRIMODELL_HPP

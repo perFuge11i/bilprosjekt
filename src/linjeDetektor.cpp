@@ -1,11 +1,11 @@
 #include "linjeDetektor.hpp"
 
-linjeDetektor::linjeDetektor(const float carLength_, const float arrayWidth_) : position(0,0){
+linjeDetektor::linjeDetektor(const float& carLength_, const float& arrayWidth_) : position(0,0){
     carLength = carLength_;
     arrayWidth = arrayWidth_;
 }
 
-void linjeDetektor::calculate(const vektor carPosition, const vektor carTrajectory) {
+void linjeDetektor::calculate(const vektor& carPosition, const vektor& carTrajectory) {
     float sensorValue = 0;//(Read value from arduino 2)
     float dLine = arrayWidth/2*sensorValue;
 
@@ -27,6 +27,6 @@ void linjeDetektor::calculate(const vektor carPosition, const vektor carTrajecto
     position.add(arrayVector);
 }
 
-vektor linjeDetektor::getPosition() const{
+vektor& linjeDetektor::getPosition() {
     return position;
 }
