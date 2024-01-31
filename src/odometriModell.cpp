@@ -2,13 +2,15 @@
 #include <math.h>
 #include "vektor.hpp"
 
-odometriModell::odometriModell(const float carLength) : trajectory(0,0), distanceTraveled(0,0){
-    dWheel = carLength/2;
+odometriModell::odometriModell(const float carWidth) : trajectory(0,0), distanceTraveled(0,0){
+    //Avstanden fra senter til hjulet er halvparten av bilens bredde
+    dWheel = carWidth/2;
 }
 
 void odometriModell::calcualteAngle() {
     angle = (dOuter - dInner)/2*dWheel;
 }
+
 void odometriModell::calculateR() {
     r = dInner/angle+dWheel;
 }
@@ -43,8 +45,8 @@ void odometriModell::calculate(float leftWheelSpeed, float rightWheelSpeed, doub
     calculateR();
 
     //Setter basis for lokal koordinatsystem (fra hvor bilen peker)
-    vektor basisY(trajectory.x,trajectory.y);
     vektor basisX(trajectory.y,-trajectory.x);
+    vektor basisY(trajectory.x,trajectory.y);
 
     if (turningLeft == true) {
         //Finner ut hvor langt bilen kjørte i dette steget (lokalt)
@@ -71,7 +73,8 @@ void odometriModell::calculate(float leftWheelSpeed, float rightWheelSpeed, doub
 
 vektor odometriModell::getDistanceTravelled() {
     return distanceTraveled;
-};
+}
+
 vektor odometriModell::getTrajectory() {
     return trajectory;
 }

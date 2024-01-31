@@ -22,8 +22,12 @@ double vektor::dotProduct(vektor vektor2) const {
 }
 
 void vektor::scale(const double scalar) {
-    x = x*scalar;
-    y = y*scalar;
+    x *= scalar;
+    y *= scalar;
+}
+void vektor::add(const vektor vektor2) {
+    x += vektor2.x;
+    y += vektor2.y;
 }
 void vektor::transform(const vektor xBasis, const vektor yBasis) {
     double transformedX = this->x*xBasis.x + this->y*yBasis.x;

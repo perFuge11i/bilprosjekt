@@ -21,7 +21,7 @@ private:
     void calculateR();
 
 public:
-    odometriModell(const float carLength);
+    odometriModell(const float carWidth);
     void calculate(float leftWheelSpeed, float rightWheelSpeed, double dTime);
     vektor getDistanceTravelled();
     vektor getTrajectory();
