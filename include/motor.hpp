@@ -7,6 +7,7 @@
 class motor {
 private:
     int encoderPin;
+    int pwmPin;
     volatile long pulseCount;
     unsigned long lastMeasurement;
     double rpm;
@@ -17,7 +18,7 @@ private:
     PID pidController;
 
 public:
-    motor(int pin, double cKp, double cKi, double cKd);
+    motor(int encoderPin, int pwmPin, double cKp, double cKi, double cKd);
     void updatePID();
     void UpdatePulseCount();
     void calculateRPM();

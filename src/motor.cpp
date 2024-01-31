@@ -1,8 +1,9 @@
 #include "motor.hpp"
 
-motor::motor(int pin, double cKp, double cKi, double cKd) :
+motor::motor(int encoderPin, int pwmPin, double cKp, double cKi, double cKd) :
         encoderPin(pin), pulseCount(0), lastMeasurement(0),
         rpm(0), output(0), setPoint(0),
+        pinMode(this->pwmPin, OUTPUT)
         consKp(cKp), consKi(cKi), consKd(cKd),
         pidController(&rpm, &output, &setPoint, consKp, consKi, consKd, DIRECT) {
     pinMode(encoderPin, INPUT);
@@ -19,9 +20,6 @@ void motor::updatePID() {
     pidController.Compute();
 }
 
-void motor::UpdatePulseCount() {
-    pulseCount++;
-}
 
 void motor::calculateRPM() {
     unsigned long currentTime = millis();
@@ -35,6 +33,7 @@ void motor::calculateRPM() {
 }
 
 void motor::update() {
+    long encoderCount = encoder.getCount();
     calculateRPM();
     updatePID();
     // TODO: Output to motor driver
