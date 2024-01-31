@@ -2,7 +2,7 @@
 #define BILPROSJEKT_BIL_HPP
 
 #include "vektor.hpp"
-#include "odemetriModell.hpp"
+#include "odometriModell.hpp"
 #include "hjul.hpp"
 #include "Arduino.h"
 
