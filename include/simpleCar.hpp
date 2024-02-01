@@ -7,6 +7,7 @@
 #include "hjul.hpp"
 #include "Arduino.h"
 #include "baneMinne.hpp"
+#include "encoder.hpp"
 
 class simpleCar {
 private:
@@ -17,6 +18,8 @@ private:
 
     motor leftMotor;
     motor rightMotor;
+    Encoder leftEncoder;
+    Encoder rightEncoder;
 
     baneMinne memory;
 
@@ -33,6 +36,7 @@ public:
     void update();
     double calculateRPMcorrection(double linePosition);
     void saveToMemory() const;
+    void readLineSensors();
 };
 
 #endif //BILPROSJEKT_SIMPLECAR_HPP
