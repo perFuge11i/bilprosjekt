@@ -17,6 +17,7 @@ private:
 
     hjul venstreHjul;
     hjul hoyreHjul;
+    baneMinne pathMemory;
 
     odometriModell odometryModel;
     linjeDetektor lineDetector;
@@ -39,8 +40,8 @@ public:
     void update();
     double readLineSensors();
     double calculateTargetRPM(double linePosition);
-    void recordTrack();
-    void recordTrackPoint();
+    void recordPath();
+    void recordPathPoint();
 };
 
 #endif //BILPROSJEKT_BIL_HPP

@@ -98,21 +98,19 @@ double bil::calculateTargetRPM(double linePosition) {
     return targetRPM;
 }
 
-void bil::recordPath() {
+void bil::recordPath() { //kan kanskje slette
     // Kalle denne i gjevne intervaller
     storePathPoint();
 }
 
-void bil::storePathPoint() {
-    if (pathIndex < MAX_PATH_POINTS) {
-        PathPoint point;
-        point.leftEncoderCount = leftMotor.getEncoderCount(); // Implement getEncoderCount in motor class
-        point.rightEncoderCount = rightMotor.getEncoderCount();
-        point.leftMotorSpeed = leftMotor.getRPM();
-        point.rightMotorSpeed = rightMotor.getRPM();
-        // Legge til mere senere?
 
-        path[pathIndex] = point;
-        pathIndex++;
-    }
+void bil::storePathPoint() {
+
+    long leftEncCount = leftEncoder.getCount();
+    long rightEncCount = rightEncoder.getCount();
+    double leftMotorRPM = leftMotor.getRPM();
+    double rightMotorRPM = rightMotor.getRPM();
+    double pidError = simplePID.GetError(); //må lage denne
+
+    pathMemory.storePathPoint(leftEncCount, rightEncCount, leftMotorRPM, rightMotorRPM, pidError); //sender verdiene til baneminne.hpp - lagrer videre i cpp
 }
