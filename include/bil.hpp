@@ -40,8 +40,7 @@ public:
     void update();
     double readLineSensors();
     double calculateTargetRPM(double linePosition);
-    void recordPath();
-    void recordPathPoint();
+    void saveToMemory() const;
 };
 
 #endif //BILPROSJEKT_BIL_HPP

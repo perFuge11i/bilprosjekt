@@ -1,19 +1,11 @@
 #include "motor.hpp"
 #include "encoder.hpp"
+#include <vector>
 
 class baneMinne {
 
 private:
-    static const int hvormangepunkterkanvihaminnemessig = 100;
-    PathPoint path[hvormangepunkterkanvihaminnemessig];
-    int pathIndex = 0;
-
-public:
-
-    void storePathPoint(long leftEncCount, long rightEncCount, double leftMotorRPM, double rightMotorRPM, double pidError);
-
-    //For å lagre punkter : Encoder counts, hastighet på hjulene, og error for å se hvor godt bila følger linja
-    struct PathPoint {
+    struct pathPoint {
         unsigned long time;
         long leftEncoderCount;
         long rightEncoderCount;
@@ -22,6 +14,11 @@ public:
         double pidError;
         // sensordata?
     };
+    std::vector<pathPoint> path;
 
+public:
 
+    void storePoint(double leftMotorRPM, double rightMotorRPM, long leftEncCount, long rightEncCount);
+
+    //For å lagre punkter : Encoder counts, hastighet på hjulene, og error for å se hvor godt bila følger linja
 };

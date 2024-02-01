@@ -11,7 +11,7 @@ motor::motor(int encoderPin, int pwmPin, double cKp, double cKi, double cKd) :
 }
 
 void motor::updatePID() {
-    double error = abs(setPoint - rpm);
+    double error = rpm;
     if (error < 10) {
         pidController.SetTunings(consKp, consKi, consKd);
     } else {
@@ -43,6 +43,6 @@ double motor::getRPM() const {
     return rpm;
 }
 
-void motor::setSetPoint(double targetRPM) {
+void motor::setRPM(double targetRPM) {
     setPoint = targetRPM;
 }

@@ -24,7 +24,7 @@ public:
     void calculateRPM();
     void update();
     double getRPM() const;
-    void setSetPoint(double targetRPM);
+    void setRPM(double targetRPM);
 };
 
 #endif //BILPROSJEKT_MOTOR_HPP

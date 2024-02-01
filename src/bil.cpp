@@ -98,13 +98,8 @@ double bil::calculateTargetRPM(double linePosition) {
     return targetRPM;
 }
 
-void bil::recordPath() { //kan kanskje slette
-    // Kalle denne i gjevne intervaller
-    storePathPoint();
-}
 
-
-void bil::storePathPoint() {
+void bil::saveToMemory() {
 
     long leftEncCount = leftEncoder.getCount();
     long rightEncCount = rightEncoder.getCount();
