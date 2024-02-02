@@ -19,6 +19,7 @@ void loop() {
         if (lap == 1) {
             Serial.println("Starter første runde.");
             // Kode til å starte første runde og recorde
+
             // Kjør rundt banen og mycar.update()?
             while (!isLapComplete()) {
                 myCar.update(); // Oppdatere jevnlig
