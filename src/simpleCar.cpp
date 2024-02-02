@@ -44,3 +44,28 @@ void simpleCar::saveToMemory() const {
 
     memory.storePoint(leftMotorRPM, rightMotorRPM, leftEncCount, rightEncCount); //sender verdiene til baneminne.hpp - lagrer videre i cpp
 }
+
+void simpleCar::replicatePathFaster(double speedIncreaseFactor) {
+    const auto& recordedPath = memory.getRecordedPath();
+
+    for (const auto& point : recordedPath) {
+        //kjør raskere!
+        double adjustedLeftMotorSpeed = point.leftMotorSpeed * speedIncreaseFactor;
+        double adjustedRightMotorSpeed = point.rightMotorSpeed * speedIncreaseFactor;
+
+        leftMotor.setRPM(adjustedLeftMotorSpeed);
+        rightMotor.setRPM(adjustedRightMotorSpeed);
+
+        //passe på at bila er i korrekt posisjon
+        verifyPositionAndAdjust(point.leftEncoderCount, point.rightEncoderCount);
+    }
+}
+
+void simpleCar::verifyPositionAndAdjust(long desiredLeftEncCount, long desiredRightEncCount) {
+    long currentLeftEncCount = leftEncoder.getCount();
+    long currentRightEncCount = rightEncoder.getCount();
+
+    // Endre hastighet basert på feil i encoder pulses?
+    if (abs(currentLeftEncCount - desiredLeftEncCount) > threshold || abs(currentRightEncCount - desiredRightEncCount) > threshold) {
+        //osv
+    }

@@ -8,6 +8,8 @@
 #include "Arduino.h"
 #include "baneMinne.hpp"
 #include "encoder.hpp"
+#include "motor.hpp"
+#include <PID_v1.h>
 
 class simpleCar {
 private:
@@ -24,6 +26,11 @@ private:
     double RPMcorrection;
 
     double baseRPM;
+    unsigned long lastTime;
+
+    void adjustMotorSpeeds(double desiredLeftSpeed, double desiredRightSpeed);
+    void verifyPositionAndAdjust(long desiredLeftEncCount, long desiredRightEncCount);
+
 public:
     simpleCar(double baseRPM_,
               PIDparameters& kValues, PIDparameters& motorKvalues,
@@ -32,6 +39,7 @@ public:
     double calculateRPMcorrection(double correction);
     void saveToMemory() const;
     void readLineSensors();
+    void replicatePathFaster(double speedIncreaseFactor);
 };
 
 #endif //BILPROSJEKT_SIMPLECAR_HPP
