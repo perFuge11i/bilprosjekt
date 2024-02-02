@@ -11,8 +11,6 @@ private:
         long rightEncoderCount;
         double leftMotorSpeed;
         double rightMotorSpeed;
-        double pidError;
-        // sensordata?
     };
     std::vector<pathPoint> path;
 

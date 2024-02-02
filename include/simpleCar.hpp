@@ -11,11 +11,6 @@
 
 class simpleCar {
 private:
-    float length = 0;//Midt mellom hjulene til midten av sensorarray
-    float width = 0;//Mellom innsiden av hjulene
-    float arrrayWidth = 0;//Mellom ytterste sensorer
-    float wheelDiameter = 0;//Diamter...
-
     motor leftMotor;
     motor rightMotor;
     Encoder leftEncoder;
@@ -29,12 +24,12 @@ private:
     double RPMcorrection;
 
     double baseRPM;
-    unsigned long lastTime;
-
 public:
-    simpleCar(double baseRPM_, double Kp, double Ki, double Kd);
+    simpleCar(double baseRPM_,
+              PIDparameters& kValues, PIDparameters& motorKvalues,
+              motorPins& leftMotorPins, motorPins& rightMotorPins);
     void update();
-    double calculateRPMcorrection(double linePosition);
+    double calculateRPMcorrection(double correction);
     void saveToMemory() const;
     void readLineSensors();
 };
