@@ -4,7 +4,6 @@ simpleCar myCar(100, 2.0, 5.0, 1.0); // Eksempel parametere: baseRPM, Kp, Ki, Kd
 
 void setup() {
     Serial.begin(9600);
-
 }
 
 void loop() {

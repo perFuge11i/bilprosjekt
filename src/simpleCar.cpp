@@ -2,7 +2,7 @@
 
 simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins) :
                      leftMotor(leftMotorPins),
-                     rightMotor(leftMotorPins),
+                     rightMotor(rightMotorPins),
                      simplePID(&lineReading, &correction, 0, kValues.kP, kValues.kI, kValues.kP, DIRECT) {
     simplePID.SetMode(AUTOMATIC);
     baseSpeed = baseSpeed_;
@@ -31,7 +31,7 @@ void simpleCar::saveToMemory() {
     unsigned long leftPulseCount = leftMotor.getPulses();
     unsigned long rightPulseCount = rightMotor.getPulses();
     unsigned long currentTime = millis() - startTime;
-
+g
     memory.storePoint(leftPulseCount, rightPulseCount, currentTime);
 }
 
