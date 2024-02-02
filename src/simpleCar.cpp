@@ -27,7 +27,7 @@ void simpleCar::update() {
     // TODO: Legg til runde 2
 }
 
-void simpleCar::saveToMemory() const {
+void simpleCar::saveToMemory() {
     unsigned long leftPulseCount = leftMotor.getPulses();
     unsigned long rightPulseCount = rightMotor.getPulses();
     unsigned long currentTime = millis() - startTime;

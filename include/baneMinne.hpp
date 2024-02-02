@@ -1,19 +1,12 @@
 #include <vector>
+#include "structures.hpp"
 
 class baneMinne {
 
 private:
-
-    struct pathPoint {
-        unsigned long time;
-        long leftEncCount;
-        long rightEncCount;
-    };
-    std::vector<pathPoint> path;
+    std::vector<simplePathPoint> path;
 
 public:
-
-    void storePoint(long leftEncCount, long rightEncCount);
-
+    void storePoint(unsigned long leftPulseCount, unsigned long rightPulseCount, unsigned long time);
 };
 

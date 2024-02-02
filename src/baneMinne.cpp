@@ -1,11 +1,11 @@
 #include "baneMinne.hpp"
 
 
-void baneMinne::storePoint(long leftEncCount, long rightEncCount) {
-    pathPoint point;
-    point.time = millis();
-    point.leftEncoderCount = leftEncCount;
-    point.rightEncoderCount = rightEncCount;
+void baneMinne::storePoint(unsigned long leftPulseCount, unsigned long rightPulseCount, unsigned long time) {
+    simplePathPoint point;
+    point.time = time;
+    point.leftPulseCount = leftPulseCount;
+    point.rightPulseCount = rightPulseCount;
 
     path.push_back(point);
 }

@@ -11,7 +11,6 @@ class simpleCar {
 private:
     motor leftMotor;
     motor rightMotor;
-
     baneMinne memory;
 
     PID simplePID;
@@ -23,7 +22,7 @@ private:
     unsigned long startTime; // TODO: Bestem når starttime skal settes
 
     double calculateSpeedCorrection(double correction);
-    void saveToMemory() const;
+    void saveToMemory();
 
 public:
     simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins);
