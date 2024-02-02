@@ -3,16 +3,15 @@
 
 #include <Arduino.h>
 
-class Encoder {
+class encoder {
 private:
-    int pin;
+    unsigned int pin;
     volatile long count;
 
 public:
-    Encoder(int pin);
+    encoder(unsigned int pin_);
     void updateCount();
-    long getCount() const;
-    static void ISRWrapper(Encoder *encoder);
+    volatile long getCount() const;
 };
 
 #endif // ENCODER_HPP

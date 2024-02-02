@@ -1,71 +1,42 @@
 #include "simpleCar.hpp"
 
-simpleCar::simpleCar(double baseRPM_,
-                     PIDparameters& kValues, PIDparameters& motorKvalues,
-                     motorPins& leftMotorPins, motorPins& rightMotorPins) :
-                     leftMotor(leftMotorPins, motorKvalues),
-                     rightMotor(rightMotorPins, motorKvalues),
+simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins) :
+                     leftMotor(leftMotorPins),
+                     rightMotor(rightMotorPins),
                      simplePID(&lineReading, &correction, 0, kValues.kP, kValues.kI, kValues.kD, DIRECT) {
     simplePID.SetMode(AUTOMATIC);
-    baseRPM = baseRPM_;
+    baseSpeed = baseSpeed_;
 }
 
 void simpleCar::update() {
-    lineReading = 0;//Les fra Arduino 2
+    //Setter linje avlesning
+    lineReading = 0;// TODO: Les fra Arduino 2
 
+    //Hvis linjen detekteres
     if (lineReading != -1) {
+        //Kjør pid og sett motorforhold
         simplePID.Compute();
-        RPMcorrection = calculateRPMcorrection(correction);
+        speedCorrection = calculateSpeedCorrection(correction);
     }
 
-
-    leftMotor.setRPM(baseRPM - RPMcorrection);
-    rightMotor.setRPM(baseRPM + RPMcorrection);
-
-    unsigned long currentTime = millis();
-    unsigned long deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
+    //Set motor til respektive hastiheter
+    leftMotor.setSpeed(baseSpeed - speedCorrection);
+    rightMotor.setSpeed(baseSpeed + speedCorrection);
 
     saveToMemory();
+    // TODO: Legg til runde 2
 }
-
-double simpleCar::calculateRPMcorrection(double correction) {
-    //Constrain correction
-    double maxCorrection = 1/2*baseRPM;
-    return constrain(correction, -maxCorrection, maxCorrection);
-}
-
 
 void simpleCar::saveToMemory() const {
-    long leftEncCount = leftMotor.getCount();
-    long rightEncCount = rightMotor.getCount();
-    double leftMotorRPM = leftMotor.getRPM();
-    double rightMotorRPM = rightMotor.getRPM();
+    unsigned long leftPulseCount = leftMotor.getPulses();
+    unsigned long rightPulseCount = rightMotor.getPulses();
+    unsigned long currentTime = millis() - startTime;
 
-    memory.storePoint(leftMotorRPM, rightMotorRPM, leftEncCount, rightEncCount); //sender verdiene til baneminne.hpp - lagrer videre i cpp
+    memory.storePoint(leftPulseCount, rightPulseCount, currentTime);
 }
 
-void simpleCar::replicatePathFaster(double speedIncreaseFactor) {
-    const auto& recordedPath = memory.getRecordedPath();
-
-    for (const auto& point : recordedPath) {
-        //kjør raskere!
-        double adjustedLeftMotorSpeed = point.leftMotorSpeed * speedIncreaseFactor;
-        double adjustedRightMotorSpeed = point.rightMotorSpeed * speedIncreaseFactor;
-
-        leftMotor.setRPM(adjustedLeftMotorSpeed);
-        rightMotor.setRPM(adjustedRightMotorSpeed);
-
-        //passe på at bila er i korrekt posisjon
-        verifyPositionAndAdjust(point.leftEncoderCount, point.rightEncoderCount);
-    }
+double simpleCar::calculateSpeedCorrection(double correction) {
+    //Constrain correction
+    double maxCorrection = 1/2*baseSpeed;
+    return constrain(correction, -maxCorrection, maxCorrection);
 }
-
-void simpleCar::verifyPositionAndAdjust(long desiredLeftEncCount, long desiredRightEncCount) {
-    long currentLeftEncCount = leftEncoder.getCount();
-    long currentRightEncCount = rightEncoder.getCount();
-
-    // Endre hastighet basert på feil i encoder pulses?
-    if (abs(currentLeftEncCount - desiredLeftEncCount) > threshold || abs(currentRightEncCount - desiredRightEncCount) > threshold) {
-        //osv
-    }

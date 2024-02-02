@@ -2,29 +2,18 @@
 #define BILPROSJEKT_MOTOR_HPP
 
 #include <Arduino.h>
-#include <PID_v1.h>
+#include "encoder.hpp"
 #include "structures.hpp"
 
 class motor {
 private:
-    int encoderPin;
-    int pwmPin;
+    encoder encoder;
     volatile long pulseCount;
-    unsigned long lastMeasurement;
-    double rpm;
-    double output;
-    double setPoint;
-
-    PID pidController;
-
 public:
-    motor(motorPins& pins, PIDparameters& kValues);
-    void updatePID();
-    void UpdatePulseCount();
-    void calculateRPM();
-    void update();
-    void setRPM(double targetRPM);
-    double getRPM() const;
+    motor(motorPins& pins);
+    void setSpeed(double speed);
+    void pulse(unsigned int pulseCount, );
+    double getPulses() const;
 };
 
 #endif //BILPROSJEKT_MOTOR_HPP

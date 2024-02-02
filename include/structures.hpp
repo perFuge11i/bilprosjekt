@@ -9,10 +9,9 @@ struct carDimesions {
 };
 
 struct simplePathPoint {
-    long leftEncoderCount;
-    long rightEncoderCount;
-    double leftMotorSpeed;
-    double rightMotorSpeed;
+    unsigned long leftPulseCount;
+    unsigned long rightPulseCount;
+    unsigned long time;
 };
 
 struct PIDparameters {

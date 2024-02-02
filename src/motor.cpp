@@ -1,41 +1,18 @@
 #include "motor.hpp"
 
-motor::motor(motorPins& pins, PIDparameters& kValues) :
-        pidController(&rpm, &output, &setPoint, kValues.kP, kValues.kI, kValues.kD, DIRECT) {
+motor::motor(motorPins& pins) : encoder(pins.encoderPin) {
 
-    consKp(cKp), consKi(cKi), consKd(cKd),
-    pinMode(encoderPin, INPUT);
-    pidController.SetMode(AUTOMATIC);
-}g
-
-void motor::updatePID() {
-    double error = rpm;
-    pidController.Compute();
+    pinMode(pins.PMWpin, INPUT);
 }
 
-
-void motor::calculateRPM() {
-    unsigned long currentTime = millis();
-    unsigned long timeDifference = currentTime - lastMeasurement;
-
-    if (timeDifference >= 1000) {
-        rpm = (pulseCount / 12.0) * (60000.0 / timeDifference);
-        pulseCount = 0;
-        lastMeasurement = currentTime;
-    }
+void motor::setSpeed(double speed) {
+    // TODO: skriv til motorpins
 }
 
-void motor::update() {
-    long encoderCount = encoder.getCount();
-    calculateRPM();
-    updatePID();
-    // TODO: Output to motor driver
+void motor::pulse(unsigned int pulseCount) {
+    // TODO: Lag funksjon
 }
 
-double motor::getRPM() const {
-    return rpm;
-}
-
-void motor::setRPM(double targetRPM) {
-    setPoint = targetRPM;
+double motor::getPulses() const {
+    return encoder.getCount();
 }
