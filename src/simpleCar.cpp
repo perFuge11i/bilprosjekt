@@ -1,11 +1,11 @@
 #include "simpleCar.hpp"
 
-simpleCar::simpleCar(double baseRPM_, double Kp, double Ki, double Kd, double setPoint) : leftMotor(),
-                                                                                          rightMotor(),
-                                                                                          simplePID(&lineReading, &correction, &setPoint, Kp, Ki, Kd, DIRECT) {
-    setPoint = 0;
+simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins) :
+                     leftMotor(leftMotorPins),
+                     rightMotor(leftMotorPins),
+                     simplePID(&lineReading, &correction, 0, kValues.kP, kValues.kI, kValues.kP, DIRECT) {
     simplePID.SetMode(AUTOMATIC);
-    baseRPM = baseRPM_;
+    baseSpeed = baseSpeed_;
 }
 
 void simpleCar::update() {
