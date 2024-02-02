@@ -40,3 +40,10 @@ double simpleCar::calculateSpeedCorrection(double correction) {
     double maxCorrection = 1/2*baseSpeed;
     return constrain(correction, -maxCorrection, maxCorrection);
 }
+
+encoder& simpleCar::getLeftEncoder() {
+    return leftMotor.getEncoder();
+}
+encoder &simpleCar::getRightEncoder() {
+    return leftMotor.getEncoder();
+}

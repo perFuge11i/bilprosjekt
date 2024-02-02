@@ -1,6 +1,6 @@
 #include "motor.hpp"
 
-motor::motor(motorPins& pins) : encoder(pins.encoderPin) {
+motor::motor(motorPins& pins) : motorEncoder(pins.encoderPin) {
 
     pinMode(pins.PMWpin, INPUT);
 }
@@ -14,5 +14,9 @@ void motor::pulse(unsigned int pulseCount) {
 }
 
 double motor::getPulses() const {
-    return encoder.getCount();
+    return motorEncoder.getCount();
+}
+
+encoder& motor::getEncoder() {
+    return motorEncoder;
 }

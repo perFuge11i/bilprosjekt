@@ -7,13 +7,14 @@
 
 class motor {
 private:
-    encoder encoder;
+    encoder motorEncoder;
     volatile long pulseCount;
 public:
     motor(motorPins& pins);
     void setSpeed(double speed);
-    void pulse(unsigned int pulseCount, );
+    void pulse(unsigned int pulseCount);
     double getPulses() const;
+    encoder &getEncoder();
 };
 
 #endif //BILPROSJEKT_MOTOR_HPP

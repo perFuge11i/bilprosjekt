@@ -1,10 +1,28 @@
 #include "simpleCar.hpp"
+#include "encoder.hpp"
+#include "structures.hpp"
 
-simpleCar myCar(100, 2.0, 5.0, 1.0); // Eksempel parametere: baseRPM, Kp, Ki, Kd, gjør den global
+motorPins leftMotorPins;
+motorPins rightMotorPins;
+PIDparameters kValues;
+
+simpleCar myCar(100, kValues, leftMotorPins, rightMotorPins); // Eksempel parametere: baseRPM, Kp, Ki, Kd, gjør den global
+
+void pulseLeft() {
+    myCar.getLeftEncoder().updateCount();
+};
+void pulseRight() {
+    myCar.getRightEncoder().updateCount();
+};
 
 void setup() {
+    leftMotorPins.encoderPin = 2;
+    rightMotorPins.encoderPin = 3;
+
     Serial.begin(9600);
 
+    attachInterrupt(digitalPinToInterrupt(leftMotorPins.encoderPin), pulseLeft, RISING);
+    attachInterrupt(digitalPinToInterrupt(rightMotorPins.encoderPin), pulseRight, RISING);
 }
 
 void loop() {

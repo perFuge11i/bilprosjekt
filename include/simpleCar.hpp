@@ -6,6 +6,7 @@
 #include "motor.hpp"
 #include "structures.hpp"
 #include <PID_v1.h>
+#include "encoder.hpp"
 
 class simpleCar {
 private:
@@ -27,6 +28,8 @@ private:
 public:
     simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins);
     void update();
+    encoder &getLeftEncoder();
+    encoder &getRightEncoder();
 };
 
 #endif //BILPROSJEKT_SIMPLECAR_HPP
