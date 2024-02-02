@@ -1,9 +1,12 @@
 #include "simpleCar.hpp"
+#include "structures.hpp"
 
-simpleCar::simpleCar(double baseRPM_, double Kp, double Ki, double Kd, double setPoint) : leftMotor(),
-                                                                            rightMotor(),
-                                                                            simplePID(&lineReading, &correction, &setPoint, Kp, Ki, Kd, DIRECT) {
-    setPoint = 0;
+simpleCar::simpleCar(double baseRPM_,
+                     PIDparameters& kValues, PIDparameters& motorKvalues,
+                     motorPins& leftMotorPins, motorPins& rightMotorPins) :
+                     leftMotor(leftMotorPins, motorKvalues),
+                     rightMotor(rightMotorPins, motorKvalues),
+                     simplePID(&lineReading, &correction, 0, kValues.kP, kValues.kI, kValues.kD, DIRECT) {
     simplePID.SetMode(AUTOMATIC);
     baseRPM = baseRPM_;
 }
@@ -35,8 +38,8 @@ double simpleCar::calculateRPMcorrection(double correction) {
 
 
 void simpleCar::saveToMemory() const {
-    long leftEncCount = leftEncoder.getCount();
-    long rightEncCount = rightEncoder.getCount();
+    long leftEncCount = leftMotor.getCount();
+    long rightEncCount = rightMotor.getCount();
     double leftMotorRPM = leftMotor.getRPM();
     double rightMotorRPM = rightMotor.getRPM();
 

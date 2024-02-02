@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <PID_v1.h>
+#include "structures.hpp"
 
 class motor {
 private:
@@ -13,18 +14,17 @@ private:
     double rpm;
     double output;
     double setPoint;
-    double aggKp, aggKi, aggKd;
-    double consKp, consKi, consKd;
+
     PID pidController;
 
 public:
-    motor(int encoderPin, int pwmPin, double cKp, double cKi, double cKd);
+    motor(motorPins& pins, PIDparameters& kValues);
     void updatePID();
     void UpdatePulseCount();
     void calculateRPM();
     void update();
-    double getRPM() const;
     void setRPM(double targetRPM);
+    double getRPM() const;
 };
 
 #endif //BILPROSJEKT_MOTOR_HPP

@@ -1,22 +1,15 @@
 #include "motor.hpp"
 
-motor::motor(int encoderPin, int pwmPin, double cKp, double cKi, double cKd) :
-        encoderPin(pin), pulseCount(0), lastMeasurement(0),
-        rpm(0), output(0), setPoint(0),
-        pinMode(this->pwmPin, OUTPUT)
-        consKp(cKp), consKi(cKi), consKd(cKd),
-        pidController(&rpm, &output, &setPoint, consKp, consKi, consKd, DIRECT) {
+motor::motor(motorPins& pins, PIDparameters& kValues) :
+        pidController(&rpm, &output, &setPoint, kValues.kP, kValues.kI, kValues.kD, DIRECT) {
+
+    consKp(cKp), consKi(cKi), consKd(cKd),
     pinMode(encoderPin, INPUT);
     pidController.SetMode(AUTOMATIC);
-}
+}g
 
 void motor::updatePID() {
     double error = rpm;
-    if (error < 10) {
-        pidController.SetTunings(consKp, consKi, consKd);
-    } else {
-        pidController.SetTunings(aggKp, aggKi, aggKd);
-    }
     pidController.Compute();
 }
 
