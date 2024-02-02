@@ -1,51 +1,54 @@
-#include <Arduino.h>
-#include <bil.hpp>
-#include <Motor.hpp>
+#include "simpleCar.hpp"
 
-int leftMotorPin = 1;
-int rightMotorPin = 2;
-const int leftEncoderPin = 3;
-const int rightEncoderPin = 4;
+simpleCar myCar(100, 2.0, 5.0, 1.0); // Eksempel parametere: baseRPM, Kp, Ki, Kd, gjør den global
 
-motor leftMotor(leftMotorPin, 2, 5, 1);
-motor rightMotor(rightMotorPin, 2, 5, 1);
-
-Encoder leftEncoder(leftEncoderPin);
-Encoder rightEncoder(rightEncoderPin);
-
-double leftMotorKp, leftMotorKi, leftMotorKd;
-double rightMotorKp, rightMotorKi, rightMotorKd;
-double directionKp, directionKi, directionKd;
-
-
-/*Motor leftMotor(leftMotorPin, leftMotorKp, leftMotorKi, leftMotorKd);
-Motor rightMotor(rightMotorPin, rightMotorKp, rightMotorKi, rightMotorKd);
-
-odometriModell odometryModel();
-
-bil Car(leftMotor, rightMotor, odometryModel, directionKp, directionKi, directionKd);
-*/
 void setup() {
-    pinMode(4, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
     Serial.begin(9600);
 
-    /* Enkel forklaring på det under : IRS / Interupts er en funksjon Arduino har som lar visse viktige funksjoner
-     bli håndtert umiddelbart uansett hva mikrokontrolleren holder på med, viktig for pulse counts i encoders.
-     Digital pin to interrupt - gjør den digitale arduino pin til en interrupt - "håndter meg først! basically
-     Resten kaller til funksjonen ISR wrapper, som oppdaterer pulse counten
-     RISING - encoder funksjon som forteller nanoen å trigre interrupten når en pin går fra LOW til HIGH */
-    attachInterrupt(digitalPinToInterrupt(leftEncoderPin), []() { Encoder::ISRWrapper(&leftEncoder); }, RISING);
-    attachInterrupt(digitalPinToInterrupt(rightEncoderPin), []() { Encoder::ISRWrapper(&rightEncoder); }, RISING);
 }
 
 void loop() {
-    Serial.print("hA");
-    /*
-    Car.update();
-    car.recordPath();
+    // tracke lap
+    static int lap = 1;
+    static bool lapInProgress = false;
 
-    leftMotor.update();
-    rightMotor.update();*/
-} //pio device monitor -p /dev/tty.usbmodem101 -b 9600
+    // skjekke om lappen e in progress
+    if (!lapInProgress) {
+        lapInProgress = true;
+
+        if (lap == 1) {
+            Serial.println("Starter første runde.");
+            // Kode til å starte første runde og recorde
+            // Kjør rundt banen og mycar.update()?
+            while (!isLapComplete()) {
+                myCar.update(); // Oppdatere jevnlig
+            }
+            Serial.println("Første runde ferdig.");
+        } else if (lap == 2) {
+            Serial.println("Starter andre runde, raskere");
+            // Kode til å starte andre runde raskere
+            myCar.replicatePathFaster(1.5); // eksempel
+            Serial.println("Andre runde fullført.");
+            // Stopp loopen?
+        }
+
+        lap++;
+        lapInProgress = false; // Reset flagget om runden e ferdig
+    }
+
+
+    // Må implemeter en metode til å bryte loopen eller få nanoen til å sove etter andre runden, for å hindre at det aldri stopper
+    if (lap > 2) {
+        // stopp bila ens
+        return;
+    }
+}
+
+
+// Må finne ut hvordan vi skjekker at en runde er ferdig
+bool isLapComplete() {
+
+    // Sensor, timer, manual input..
+    return false;
+}
+
