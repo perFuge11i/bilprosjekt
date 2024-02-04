@@ -25,4 +25,9 @@ struct motorPins {
     unsigned int PMWpin;
 };
 
+struct pathSegment {
+    unsigned long targetLeftPulseCount;
+    unsigned long targetRightPulseCount;
+    unsigned long targetTime;
+};
 #endif //BILPROSJEKT_STRUCTURES_HPP

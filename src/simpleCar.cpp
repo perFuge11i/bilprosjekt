@@ -10,7 +10,7 @@ simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftM
 
 void simpleCar::update() {
     //Setter linje avlesning
-    lineReading = 0;// TODO: Les fra Arduino 2
+    lineReading = 0; // TODO: Les fra Arduino 2
 
     //Hvis linjen detekteres
     if (lineReading != -1) {
@@ -24,7 +24,7 @@ void simpleCar::update() {
     rightMotor.setSpeed(baseSpeed + speedCorrection);
 
     saveToMemory();
-    // TODO: Legg til runde 2
+
 }
 
 void simpleCar::saveToMemory() {
@@ -44,6 +44,45 @@ double simpleCar::calculateSpeedCorrection(double correction) {
 encoder& simpleCar::getLeftEncoder() {
     return leftMotor.getEncoder();
 }
+
 encoder &simpleCar::getRightEncoder() {
-    return leftMotor.getEncoder();
+    return rightMotor.getEncoder();
 }
+
+void simpleCar::beginFasterLap() {
+    currentSegmentIndex = 0;
+    memory.generateSegments();
+    segmentStartTime = millis();
+}
+
+void simpleCar::followSegment() {
+    if (currentSegmentIndex < memory.segments.size()) {
+
+        auto segment = memory.getNextSegment(currentSegmentIndex);
+        unsigned long currentTime = millis() - segmentStartTime;
+
+        unsigned long currentLeftPulseCount = leftMotor.getPulses();
+        unsigned long currentRightPulseCount = rightMotor.getPulses();
+
+        bool hasReachedTarget = (currentLeftPulseCount >= segment.targetLeftPulseCount) &&
+                                (currentRightPulseCount >= segment.targetRightPulseCount);
+
+        if (hasReachedTarget) {
+            currentSegmentIndex++;
+            newSegment = true;
+            if (currentSegmentIndex < memory.segments.size()) {
+                segmentStartTime = millis(); // Reset time
+            }
+        }
+
+        //todo: implementer hastighet calcs, noe sånt:
+
+        long distanceToLeftTarget = segment.targetLeftPulseCount - currentLeftPulseCount;
+        long distanceToRightTarget = segment.targetRightPulseCount - currentRightPulseCount;
+        double leftSpeedAdjustment = calculateSpeedAdjustment(distanceToLeftTarget);
+        double rightSpeedAdjustment = calculateSpeedAdjustment(distanceToRightTarget);
+
+        leftMotor.setSpeed(baseSpeed + leftSpeedAdjustment);
+        rightMotor.setSpeed(baseSpeed + rightSpeedAdjustment);
+
+    }

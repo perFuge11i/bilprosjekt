@@ -21,13 +21,18 @@ private:
 
     double baseSpeed;
     unsigned long startTime; // TODO: Bestem når starttime skal settes
+    unsigned long segmentStartTime;
+    unsigned int currentSegmentIndex = 0;
+    bool newSegment = true;
 
     double calculateSpeedCorrection(double correction);
     void saveToMemory();
+    void followSegment();
 
 public:
     simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins);
     void update();
+    void beginFasterLap();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();
 };
