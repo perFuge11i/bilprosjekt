@@ -57,7 +57,7 @@ void loop() {
     }
 
     else if (digitalRead(switchPin3) == LOW) {
-        if (mode != 3 && lap = 2) {
+        if (mode != 3 && lap = =2) {
             mode = 3;
         }
 

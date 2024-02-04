@@ -56,10 +56,10 @@ void simpleCar::beginFasterLap() {
 }
 
 void simpleCar::followSegment() {
-    if (currentSegmentIndex < memory.segments.size()) {
+    if (currentSegmentIndex < memory.segments.size()) { // Skjekker om det er flere segmenter å følge
 
-        auto segment = memory.getNextSegment(currentSegmentIndex);
-        unsigned long currentTime = millis() - segmentStartTime;
+        auto segment = memory.getNextSegment(currentSegmentIndex); //henter neste segment
+        unsigned long currentTime = millis() - segmentStartTime; // beregner tiden som har gått siden starten av segmentet
 
         unsigned long currentLeftPulseCount = leftMotor.getPulses();
         unsigned long currentRightPulseCount = rightMotor.getPulses();
@@ -71,14 +71,15 @@ void simpleCar::followSegment() {
             currentSegmentIndex++;
             newSegment = true;
             if (currentSegmentIndex < memory.segments.size()) {
-                segmentStartTime = millis(); // Reset time
+                segmentStartTime = millis(); // Reset time for den nye segmentet
             }
         }
 
         //todo: implementer hastighet calcs, noe sånt:
-
+        // Beregner avstanden til målpulsantallet for både venstre og høyre motor
         long distanceToLeftTarget = segment.targetLeftPulseCount - currentLeftPulseCount;
         long distanceToRightTarget = segment.targetRightPulseCount - currentRightPulseCount;
+
         double leftSpeedAdjustment = calculateSpeedAdjustment(distanceToLeftTarget);
         double rightSpeedAdjustment = calculateSpeedAdjustment(distanceToRightTarget);
 

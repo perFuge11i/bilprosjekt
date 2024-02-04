@@ -13,8 +13,8 @@ void baneMinne::storePoint(unsigned long leftPulseCount, unsigned long rightPuls
 
 void baneMinne::generateSegments() {
 
-    segments.clear();
-    if (path.size() < 2) return;
+    segments.clear(); // Tømmer listen med segmenter
+    if (path.size() < 2) return; // Avslutter tidlig hvis det ikke er nok punkter til å lage segmenter
 
     for (size_t i = 1; i < path.size(); i++) {
         PathSegment segment;
@@ -27,8 +27,8 @@ void baneMinne::generateSegments() {
 }
 
 PathSegment baneMinne::getNextSegment(unsigned int currentIndex) {
-    if (currentIndex < segments.size()) {
-        return segments[currentIndex];
+    if (currentIndex < segments.size()) { // Sjekker om indeksen er innenfor grensene av segmentlisten
+        return segments[currentIndex]; // Returnerer segmentet på den nåværende indeksen
     }
     return PathSegment{0, 0, 0};
 }
