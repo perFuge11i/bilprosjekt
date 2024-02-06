@@ -14,12 +14,11 @@ void simpleCar::update() {
 
     //Hvis linjen detekteres
     if (lineReading != -1) {
+
         //Kjør pid og sett motorforhold
         simplePID.Compute();
         speedCorrection = calculateSpeedCorrection(correction);
     }
-
-    //Set motor til respektive hastiheter
     leftMotor.setSpeed(baseSpeed - speedCorrection);
     rightMotor.setSpeed(baseSpeed + speedCorrection);
 
