@@ -5,6 +5,11 @@
 motorPins leftMotorPins;
 motorPins rightMotorPins;
 PIDparameters kValues;
+const int switchPin1 = 4;
+const int switchPin2 = 5;
+const int switchPin3 = 6;
+
+int mode = 0;
 
 simpleCar myCar(100, kValues, leftMotorPins, rightMotorPins); // Eksempel parametere: baseRPM, Kp, Ki, Kd, gjør den global
 
@@ -21,53 +26,72 @@ void setup() {
 
     Serial.begin(9600);
 
+    pinMode(switchPin1, INPUT_PULLUP); //INPUT_PULLUP: arduino funksjon som setter en default high state for open switches
+    pinMode(switchPin2, INPUT_PULLUP);
+    pinMode(switchPin3, INPUT_PULLUP);
+
+
     attachInterrupt(digitalPinToInterrupt(leftMotorPins.encoderPin), pulseLeft, RISING);
     attachInterrupt(digitalPinToInterrupt(rightMotorPins.encoderPin), pulseRight, RISING);
 }
 
 void loop() {
-    // tracke lap
+
     static int lap = 1;
     static bool lapInProgress = false;
 
-    // skjekke om lappen e in progress
-    if (!lapInProgress) {
-        lapInProgress = true;
-
-        if (lap == 1) {
-            Serial.println("Starter første runde.");
-            // Kode til å starte første runde og recorde
-
-            // Kjør rundt banen og mycar.update()?
-            while (!isLapComplete()) {
-                myCar.update(); // Oppdatere jevnlig
-            }
-            Serial.println("Første runde ferdig.");
-        } else if (lap == 2) {
-            Serial.println("Starter andre runde, raskere");
-            // Kode til å starte andre runde raskere
-            myCar.replicatePathFaster(1.5); // eksempel
-            Serial.println("Andre runde fullført.");
-            // Stopp loopen?
+    // tracke lap
+    if (digitalRead(switchPin1) == LOW) {
+        if (mode != 1) { //om mode byttes til 1 fra en anna modus
+            mode = 1;
+            lapInProgress = false
         }
-
-        lap++;
-        lapInProgress = false; // Reset flagget om runden e ferdig
     }
 
+    else if (digitalRead(switchPin2) == LOW) {
+        mode = 2;
+        if (lap == 1 && lapInProgress) {
+            lapInProgress = false;
+            lap ++;
+        }
+    }
 
-    // Må implemeter en metode til å bryte loopen eller få nanoen til å sove etter andre runden, for å hindre at det aldri stopper
+    else if (digitalRead(switchPin3) == LOW) {
+        if (mode != 3 && lap = =2) {
+            mode = 3;
+        }
+
+    }
+
+    switch (mode) {
+        case 1:
+            if (!lapInProgress && lap == 1) {
+                lapInProgress = true;
+                myCar.update()
+
+            }
+            break;
+        case 2:
+            //noe her? standby mode eller hva
+            break;
+        case 3:
+            if (!lapInProgress) {
+                lapInProgress = true;
+                myCar.beginFasterLap();
+            } else {
+                myCar.followSegment();
+            }
+            break;
+        default:
+            //lalallaalalalal noe her
+            break;
+    }
     if (lap > 2) {
-        // stopp bila ens
+        mode = 0
         return;
     }
 }
 
 
-// Må finne ut hvordan vi skjekker at en runde er ferdig
-bool isLapComplete() {
 
-    // Sensor, timer, manual input..
-    return false;
-}
 
