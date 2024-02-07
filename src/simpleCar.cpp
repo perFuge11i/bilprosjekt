@@ -1,13 +1,11 @@
 #include "simpleCar.hpp"
 
 const float kp_sensor = 1.0f, ki_sensor = 0.01f, kd_sensor = 0.001f, windup_sensor = 20.0f; //usikker på windup
-const float kp_motor = 1.0f, ki_motor = 0.01f, kd_motor = 0.001f, windup_motor = 20.0f;
 
 simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins)
         : leftMotor(leftMotorPins),
           rightMotor(rightMotorPins),
           sensorPID(kp_sensor, ki_sensor, kd_sensor, windup_sensor),
-          motorPID(kp_motor, ki_motor, kd_motor, windup_motor),
           baseSpeed(baseSpeed_) {
 }
 
@@ -15,25 +13,20 @@ void simpleCar::update() {
 
     static unsigned long lastUpdateTime = 0;
     unsigned long currentTime = millis();
-    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund, todo: gjøre til millisekund?
+    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund,
     lastUpdateTime = currentTime;
 
     float sensorInput = readSensor(); //må lage
     float sensorSetpoint = 0;
-    float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput);
+    float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput); //todo: legg til motor outputs
 
-    float encoderSetpoint = sensorOutput; // todo: denne blir feil, skal fungere som en hastighets PID
-    float encoderInput = encoder;
-    float encoderOutput = encoderPID.regulate(dt, encoderSetpoint, encoderInput);
-
-    adjustMotorSpeeds(encoderOutput);
 
     saveToMemory();
     memory.printStoredPoints();
 
 }
 
-void simpleCar::adjustMotorSpeeds(float encoderOutput) { //todo blir denne brukt
+void simpleCar::adjustMotorSpeeds(float encoderOutput) {
 
     int baseSpeed = 100;
     int leftMotorSpeed = baseSpeed - encoderOutput;
@@ -53,7 +46,7 @@ void simpleCar::saveToMemory() {
     memory.storePoint(leftPulseCount, rightPulseCount, currentTime);
 }
 
-double simpleCar::calculateSpeedCorrection(double correction) {
+double simpleCar::calculateSpeedCorrection(double correction) { //blir denne brukt
     //Constrain correction
     double maxCorrection = 1/2*baseSpeed;
     return constrain(correction, -maxCorrection, maxCorrection);

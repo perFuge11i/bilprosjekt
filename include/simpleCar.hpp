@@ -27,7 +27,6 @@ private:
     bool newSegment = true;
 
     PID sensorPID;
-    PID motorPID;
 
     double calculateSpeedCorrection(double correction);
     void saveToMemory();
