@@ -1,36 +1,55 @@
 #include "simpleCar.hpp"
 
-simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins) :
-                     leftMotor(leftMotorPins),
-                     rightMotor(rightMotorPins),
-                     simplePID(&lineReading, &correction, 0, kValues.kP, kValues.kI, kValues.kP, DIRECT) {
-    simplePID.SetMode(AUTOMATIC);
-    baseSpeed = baseSpeed_;
+const float kp_sensor = 1.0f, ki_sensor = 0.01f, kd_sensor = 0.001f, windup_sensor = 20.0f; //usikker på windup
+const float kp_motor = 1.0f, ki_motor = 0.01f, kd_motor = 0.001f, windup_motor = 20.0f;
+
+simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins)
+        : leftMotor(leftMotorPins),
+          rightMotor(rightMotorPins),
+          sensorPID(kp_sensor, ki_sensor, kd_sensor, windup_sensor),
+          motorPID(kp_motor, ki_motor, kd_motor, windup_motor),
+          baseSpeed(baseSpeed_) {
 }
 
 void simpleCar::update() {
-    //Setter linje avlesning
-    lineReading = 0; // TODO: Les fra Arduino 2
 
-    //Hvis linjen detekteres
-    if (lineReading != -1) {
+    static unsigned long lastUpdateTime = 0;
+    unsigned long currentTime = millis();
+    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund
+    lastUpdateTime = currentTime;
 
-        //Kjør pid og sett motorforhold
-        simplePID.Compute();
-        speedCorrection = calculateSpeedCorrection(correction);
-    }
-    leftMotor.setSpeed(baseSpeed - speedCorrection);
-    rightMotor.setSpeed(baseSpeed + speedCorrection);
+    float sensorInput = readSensor(); //må lage
+    float sensorSetpoint = 0;
+    float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput);
+    float encoderSetpoint = sensorOutput; // no deviation from path, hold lik fart
+    float encoderInput = encoder;
+    float encoderOutput = encoderPID.regulate(dt, encoderSetpoint, encoderInput);
+
+    adjustMotorSpeeds(encoderOutput);
 
     saveToMemory();
+    memory.printStoredPoints();
 
 }
+
+void simpleCar::adjustMotorSpeeds(float encoderOutput) {
+
+    int baseSpeed = 100;
+    int leftMotorSpeed = baseSpeed - encoderOutput;
+    int rightMotorSpeed = baseSpeed + encoderOutput;
+
+    leftMotor.setSpeed(leftMotorSpeed); //må lage
+    rightMotor.setSpeed(rightMotorSpeed);
+}
+
+
+
 
 void simpleCar::saveToMemory() {
     unsigned long leftPulseCount = leftMotor.getPulses();
     unsigned long rightPulseCount = rightMotor.getPulses();
     unsigned long currentTime = millis() - startTime;
-g
+
     memory.storePoint(leftPulseCount, rightPulseCount, currentTime);
 }
 

@@ -9,6 +9,7 @@ void baneMinne::storePoint(unsigned long leftPulseCount, unsigned long rightPuls
     point.rightPulseCount = rightPulseCount;
 
     path.push_back(point);
+
 }
 
 void baneMinne::generateSegments() {
@@ -31,4 +32,15 @@ PathSegment baneMinne::getNextSegment(unsigned int currentIndex) {
         return segments[currentIndex]; // Returnerer segmentet på den nåværende indeksen
     }
     return PathSegment{0, 0, 0};
+}
+
+void baneMinne::printStoredPoints() {
+    for (const auto& point : path) {
+        Serial.print("Time: ");
+        Serial.print(point.time);
+        Serial.print(", Left Pulse: ");
+        Serial.print(point.leftPulseCount);
+        Serial.print(", Right Pulse: ");
+        Serial.println(point.rightPulseCount);
+    }
 }

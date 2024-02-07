@@ -7,6 +7,7 @@
 #include "structures.hpp"
 #include <PID_v1.h>
 #include "encoder.hpp"
+#include "PID.hpp"
 
 class simpleCar {
 private:
@@ -24,6 +25,9 @@ private:
     unsigned long segmentStartTime;
     unsigned int currentSegmentIndex = 0;
     bool newSegment = true;
+
+    PID sensorPID;
+    PID motorPID;
 
     double calculateSpeedCorrection(double correction);
     void saveToMemory();

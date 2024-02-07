@@ -1,6 +1,4 @@
-//
-// Created by Per Fugelli on 05/02/2024.
-//
+
 #include "PID.hpp"
 
 PID::PID(float _kp, float _ki, float _kd, float _windup) {

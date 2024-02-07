@@ -10,6 +10,7 @@ private:
 public:
     void storePoint(unsigned long leftPulseCount, unsigned long rightPulseCount, unsigned long time);
     void generateSegments();
+    void printStoredPoints();
     PathSegment getNextSegment(unsigned int currentIndex);
 };
 

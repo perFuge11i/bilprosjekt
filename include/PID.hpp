@@ -1,7 +1,3 @@
-//
-// Created by Per Fugelli on 05/02/2024.
-//
-
 #ifndef BILPROSJEKT_PID_HPP
 #define BILPROSJEKT_PID_HPP
 
