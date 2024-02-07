@@ -15,13 +15,14 @@ void simpleCar::update() {
 
     static unsigned long lastUpdateTime = 0;
     unsigned long currentTime = millis();
-    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund
+    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund, todo: gjøre til millisekund?
     lastUpdateTime = currentTime;
 
     float sensorInput = readSensor(); //må lage
     float sensorSetpoint = 0;
     float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput);
-    float encoderSetpoint = sensorOutput; // no deviation from path, hold lik fart
+
+    float encoderSetpoint = sensorOutput; // todo: denne blir feil, skal fungere som en hastighets PID
     float encoderInput = encoder;
     float encoderOutput = encoderPID.regulate(dt, encoderSetpoint, encoderInput);
 
@@ -32,16 +33,15 @@ void simpleCar::update() {
 
 }
 
-void simpleCar::adjustMotorSpeeds(float encoderOutput) {
+void simpleCar::adjustMotorSpeeds(float encoderOutput) { //todo blir denne brukt
 
     int baseSpeed = 100;
     int leftMotorSpeed = baseSpeed - encoderOutput;
     int rightMotorSpeed = baseSpeed + encoderOutput;
 
-    leftMotor.setSpeed(leftMotorSpeed); //må lage
+    leftMotor.setSpeed(leftMotorSpeed);
     rightMotor.setSpeed(rightMotorSpeed);
 }
-
 
 
 
@@ -94,14 +94,14 @@ void simpleCar::followSegment() {
         }
 
         //todo: implementer hastighet calcs, noe sånt:
-        // Beregner avstanden til målpulsantallet for både venstre og høyre motor
+
         long distanceToLeftTarget = segment.targetLeftPulseCount - currentLeftPulseCount;
         long distanceToRightTarget = segment.targetRightPulseCount - currentRightPulseCount;
 
         double leftSpeedAdjustment = calculateSpeedAdjustment(distanceToLeftTarget);
         double rightSpeedAdjustment = calculateSpeedAdjustment(distanceToRightTarget);
 
-        leftMotor.setSpeed(baseSpeed + leftSpeedAdjustment);
+        leftMotor.setSpeed(baseSpeed + leftSpeedAdjustment); //todo: lage setSpeed som gjør encoder counts per millisekund til PWM
         rightMotor.setSpeed(baseSpeed + rightSpeedAdjustment);
 
     }

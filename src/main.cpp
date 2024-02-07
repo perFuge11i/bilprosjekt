@@ -33,15 +33,10 @@ void setup() {
 
 void loop() {
 
-    myCar.update();
-
-
-
     static int lap = 1;
-    static bool lapInProgress = false;
 
     int reading = digitalRead(buttonPin);
-    static int lastButtonState = HIGH; // assuming the button is in pull-up mode and HIGH when not pressed
+    static int lastButtonState = HIGH;
     static unsigned long lastDebounceTime = 0;
 
     if (reading != lastButtonState) {
@@ -49,10 +44,9 @@ void loop() {
     }
 
     if ((millis() - lastDebounceTime) > debounceDelay) {
-        // if the button state has changed:
-        if (reading == LOW) { // assuming the button is pressed when LOW
-            mode = (mode + 1) % 4; // Cycle through modes 0 to 3
-            while(digitalRead(buttonPin) == LOW); // Wait for button release to avoid multiple increments
+        if (reading == LOW) {
+            mode = (mode + 1) % 4;
+            while(digitalRead(buttonPin) == LOW);
         }
     }
 
@@ -61,14 +55,12 @@ void loop() {
     switch (mode) {
         case 1:
             if (!lapInProgress && lap == 1) {
-                lapInProgress = true;
                 myCar.update()
 
             }
             break;
         case 2:
-            //noe her? standby mode eller hva
-            lapInProgress = false;
+            //todo: Standby + kanskje loade segments, gjør klar for runde 2 kanskje?
             break;
         case 3:
             myCar.beginFasterLap();
@@ -76,14 +68,13 @@ void loop() {
 
             break;
         default:
-            //lalallaalalalal noe her reset data ens
+            //Todo: er dette mode 0? Hvis ja, clear all lagrede data
             break;
     }
     if (lap > 2) {
         mode = 0
         return;
     }
-*/
 
 }
 

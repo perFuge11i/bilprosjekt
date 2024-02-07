@@ -21,7 +21,7 @@ void baneMinne::generateSegments() {
         PathSegment segment;
         segment.targetLeftPulseCount = path[i].leftPulseCount;
         segment.targetRightPulseCount = path[i].rightPulseCount;
-        segment.targetTime = path[i].time * 0.5 ; //noe sånt
+        segment.targetTime = path[i].time * 0.5 ; //todo: denne blir kanskje feil, hensikten er å gjøre tida det tar å kjøre så lite så mulig (bilden kjører så fort soom mulig)
 
         segments.push_back(segment);
     }
