@@ -15,13 +15,18 @@ private:
     motor rightMotor;
     baneMinne memory;
 
+    static const int numSensors = 19;
+    int sensorPins[numSensors] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, A0, A1, A2, A3, A4, A5, A6}; // eksempel
+    int sensorValues[numSensors];
+    int sensorWeights[numSensors] = {-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
     PID simplePID;
     double lineReading;
     double correction;
     double speedCorrection;
 
     double baseSpeed;
-    unsigned long startTime; // TODO: Bestem når starttime skal settes
+    unsigned long startTime; // TODO: Bestem når starttime skal settes - når motorene starter?
     unsigned long segmentStartTime;
     unsigned int currentSegmentIndex = 0;
     bool newSegment = true;

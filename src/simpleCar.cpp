@@ -9,17 +9,43 @@ simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftM
           baseSpeed(baseSpeed_) {
 }
 
+void simpleCar::readSensors() {
+    for (int i = 0; i < numSensors; ++i) {
+        sensorValues[i] = digitalRead(sensorPins[i]);
+    }
+}
+
+float simpleCar::calculateSensorValue() {
+    float weightedSum = 0;
+    int sensorsDetected = 0;
+
+    for (int i = 0; i < 19; ++i) {
+        weightedSum += sensorValues[i] * sensorWeights[i];
+        if (sensorValues[i] == 1) {
+            sensorsDetected++;
+        }
+    }
+
+    if (sensorsDetected > 0) {
+        return weightedSum / sensorsDetected;
+    } else {
+        return 0;
+    }
+}
+
 void simpleCar::update() {
+
+    readSensors();
+    float weightedValue = calculateSensorValue();
 
     static unsigned long lastUpdateTime = 0;
     unsigned long currentTime = millis();
-    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund,
+    float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund.
     lastUpdateTime = currentTime;
 
-    float sensorInput = readSensor(); //må lage
+    float sensorInput = weightedValue; //må lage
     float sensorSetpoint = 0;
     float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput); //todo: legg til motor outputs
-
 
     saveToMemory();
     memory.printStoredPoints();
@@ -35,8 +61,6 @@ void simpleCar::adjustMotorSpeeds(float encoderOutput) {
     leftMotor.setSpeed(leftMotorSpeed);
     rightMotor.setSpeed(rightMotorSpeed);
 }
-
-
 
 void simpleCar::saveToMemory() {
     unsigned long leftPulseCount = leftMotor.getPulses();
