@@ -43,6 +43,9 @@ public:
     void beginFasterLap();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();
+    void initSensorPins();
+    void readSensors();
+    float calculateSensorValue();
 };
 
 #endif //BILPROSJEKT_SIMPLECAR_HPP

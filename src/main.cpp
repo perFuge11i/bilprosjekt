@@ -9,6 +9,7 @@ unsigned long debounceDelay = 50;
 
 int mode = 0;
 
+simpleCar myCar(baseSpeed, kValues, leftMotorPins, rightMotorPins);
 
 void pulseLeft() {
     myCar.getLeftEncoder().updateCount();
@@ -21,6 +22,7 @@ void setup() {
 
     leftMotorPins.encoderPin = 2;
     rightMotorPins.encoderPin = 3;
+    myCar.initSensorPins();
 
     Serial.begin(9600);
 
