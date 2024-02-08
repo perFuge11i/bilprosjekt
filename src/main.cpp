@@ -7,6 +7,13 @@ int mode = 0;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 200;
 
+PIDparameters kValues {1, 1, 1};
+motorPins leftMotorPins {2, 3};
+motorPins rightMotorPins {2, 3};
+const int baseSpeed = 100;
+
+simpleCar myCar(baseSpeed, kValues, leftMotorPins, rightMotorPins);
+
 void pulseLeft() {
     myCar.getLeftEncoder().updateCount();
 };
@@ -16,8 +23,6 @@ void pulseRight() {
 
 void setup() {
 
-    leftMotorPins.encoderPin = 2;
-    rightMotorPins.encoderPin = 3;
 
     Serial.begin(9600);
 
@@ -42,7 +47,7 @@ void loop() {
     if ((millis() - lastDebounceTime) > debounceDelay) {
         if (reading == LOW) {
             mode = (mode + 1) % 4;
-            while(digitalRead(buttonPin) == LOW);
+            while (digitalRead(buttonPin) == LOW);
         }
     }
 
@@ -50,12 +55,12 @@ void loop() {
 
     switch (mode) {
         case 0:
-            myCar.reset();
+            myCar.resetMemory();
             break;
         case 1:
             myCar.update();
 
-            }
+
             break;
         case 2:
             fasterLapStart = false;
@@ -63,12 +68,13 @@ void loop() {
         case 3:
             if (!fasterLapStart) {
                 myCar.beginFasterLap();
-                fasterLapStart = true; }
+                fasterLapStart = true;
+            }
 
             myCar.followSegment();
-
             break;
     }
+}
 
 
 

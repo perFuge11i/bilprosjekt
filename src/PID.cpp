@@ -1,7 +1,7 @@
 
 #include "PID.hpp"
 
-PID::PID(float _kp, float _ki, float _kd, float _windup) {
+PID::PID(const float _kp, const float _ki, const float _kd, const float _windup) {
     kp = _kp;
     ki = _ki;
     kd = _kd;

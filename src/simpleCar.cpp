@@ -9,36 +9,6 @@ simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftM
           baseSpeed(baseSpeed_) {
 }
 
-void simpleCar::initSensorPins() { //placeholder for now
-    for (int i = 0; i < numSensors; ++i) {
-        pinMode(sensorPins[i], INPUT);
-    }
-}
-
-void simpleCar::readSensors() {
-    for (int i = 0; i < numSensors; ++i) {
-        sensorValues[i] = digitalRead(sensorPins[i]);
-    }
-}
-
-float simpleCar::calculateSensorValue() {
-    float weightedSum = 0;
-    int sensorsDetected = 0;
-
-    for (int i = 0; i < 19; ++i) {
-        weightedSum += sensorValues[i] * sensorWeights[i];
-        if (sensorValues[i] == 1) {
-            sensorsDetected++;
-        }
-    }
-
-    if (sensorsDetected > 0) {
-        return weightedSum / sensorsDetected;
-    } else {
-        return 0;
-    }
-}
-
 void simpleCar::update() {
 
     readSensors();
@@ -67,16 +37,6 @@ void simpleCar::update() {
 
 }
 
-void simpleCar::adjustMotorSpeeds(float encoderOutput) {
-
-    int baseSpeed = 100;
-    int leftMotorSpeed = baseSpeed - encoderOutput;
-    int rightMotorSpeed = baseSpeed + encoderOutput;
-
-    leftMotor.setSpeed(leftMotorSpeed);
-    rightMotor.setSpeed(rightMotorSpeed);
-}
-
 void simpleCar::saveToMemory() {
     unsigned long leftPulseCount = leftMotor.getPulses();
     unsigned long rightPulseCount = rightMotor.getPulses();
@@ -100,21 +60,23 @@ void simpleCar::beginFasterLap() {
 }
 
 void simpleCar::followSegment() {
-    if (currentSegmentIndex < memory.segments.size()) { // Skjekker om det er flere segmenter å følge
+    if (currentSegmentIndex < memory.getNumberOfSegments()) { // Skjekker om det er flere segmenter å følge
 
         auto segment = memory.getNextSegment(currentSegmentIndex); //henter neste segment
-        unsigned long currentTime = millis() - segmentStartTime; // beregner tiden som har gått siden starten av segmentet
+        unsigned long currentTime =
+                millis() - segmentStartTime; // beregner tiden som har gått siden starten av segmentet
 
         unsigned long currentLeftPulseCount = leftMotor.getPulses();
         unsigned long currentRightPulseCount = rightMotor.getPulses();
 
-        bool hasReachedTarget = (currentLeftPulseCount >= segment.targetLeftPulseCount) && //må ha nådd target encoder counts på begge motorene for å gå videre
+        bool hasReachedTarget = (currentLeftPulseCount >= segment.targetLeftPulseCount) &&
+                                //må ha nådd target encoder counts på begge motorene for å gå videre
                                 (currentRightPulseCount >= segment.targetRightPulseCount);
 
         if (hasReachedTarget) {
             currentSegmentIndex++;
             newSegment = true;
-            if (currentSegmentIndex < memory.segments.size()) {
+            if (currentSegmentIndex < memory.getNumberOfSegments()) {
                 segmentStartTime = millis(); // Reset time for den nye segmentet
             }
         }
@@ -131,15 +93,7 @@ void simpleCar::followSegment() {
         rightMotor.setSpeed(rightSpeedAdjustment);
 
     }
-
-    double simpleCar::neededSpeed(double correction) { //gjør encoder counts per millisekund til PWM HELT SIKKERT FEIL Æ E SLITEN
-        //må gjør encoder counts til RPM - tar distance som mangler med target speed for segmenter
-        unsigned long currentTime = millis();
-        unsigned long elapsedTime = currentTime - segmentStartTime;
-
-        unsigned long timeLeft = (segment.targetTime > elapsedTime) ? (segment.targetTime - elapsedTime) : 0;
-        double speedAdjustment = distanceToTarget / timeLeft; //counts per milli
-
-        double pwmValue = map(speedAdjustment, -maxSpeed, maxSpeed, -255, 255);
-        return constrain(pwmValue, -maxPWM, maxPWM);
-    }
+}
+void simpleCar::resetMemory() {
+    memory.reset();
+}

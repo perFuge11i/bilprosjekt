@@ -12,7 +12,7 @@ public:
     float lastIntegral;
     float lastError;
 
-    PID(float _kp, float _ki, float _kd, float _windup = 0);
+    PID(const float _kp, const float _ki, const float _kd, const float _windup = 0);
     float regulate(float dt, float target, float current);
 
 };
