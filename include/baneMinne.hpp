@@ -12,6 +12,7 @@ public:
     void generateSegments();
     void printStoredPoints();
     PathSegment getNextSegment(unsigned int currentIndex);
+    void reset();
 };
 
 

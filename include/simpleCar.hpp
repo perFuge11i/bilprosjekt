@@ -33,13 +33,13 @@ private:
 
     PID sensorPID;
 
-    double calculateSpeedCorrection(double correction);
+    double neededSpeed(double correction);
     void saveToMemory();
-    void followSegment();
 
 public:
     simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftMotorPins, motorPins& rightMotorPins);
     void update();
+    void followSegment();
     void beginFasterLap();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();

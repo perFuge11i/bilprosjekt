@@ -5,10 +5,7 @@
 const int buttonPin = 7;
 int mode = 0;
 unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
-
-int mode = 0;
-
+unsigned long debounceDelay = 200;
 
 void pulseLeft() {
     myCar.getLeftEncoder().updateCount();
@@ -26,14 +23,13 @@ void setup() {
 
     pinMode(buttonPin, INPUT_PULLUP);
 
-
     attachInterrupt(digitalPinToInterrupt(leftMotorPins.encoderPin), pulseLeft, RISING);
     attachInterrupt(digitalPinToInterrupt(rightMotorPins.encoderPin), pulseRight, RISING);
 }
 
 void loop() {
 
-    static int lap = 1;
+    bool fasterLapStart = false;
 
     int reading = digitalRead(buttonPin);
     static int lastButtonState = HIGH;
@@ -53,30 +49,27 @@ void loop() {
     lastButtonState = reading;
 
     switch (mode) {
+        case 0:
+            myCar.reset();
+            break;
         case 1:
-            if (!lapInProgress && lap == 1) {
-                myCar.update()
+            myCar.update();
 
             }
             break;
         case 2:
-            //todo: Standby + kanskje loade segments, gjør klar for runde 2 kanskje?
+            fasterLapStart = false;
             break;
         case 3:
-            myCar.beginFasterLap();
+            if (!fasterLapStart) {
+                myCar.beginFasterLap();
+                fasterLapStart = true; }
+
             myCar.followSegment();
 
             break;
-        default:
-            //Todo: er dette mode 0? Hvis ja, clear all lagrede data
-            break;
-    }
-    if (lap > 2) {
-        mode = 0
-        return;
     }
 
-}
 
 
 

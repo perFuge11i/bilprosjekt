@@ -21,7 +21,7 @@ void baneMinne::generateSegments() {
         PathSegment segment;
         segment.targetLeftPulseCount = path[i].leftPulseCount;
         segment.targetRightPulseCount = path[i].rightPulseCount;
-        segment.targetTime = path[i].time * 0.5 ; //Todo: denne blir kanskje feil, hensikten er å gjøre tida det tar å kjøre så lite så mulig (bilden kjører så fort soom mulig)
+        segment.targetTime = path[i].time * 0.5 ; //Todo: denne blir kanskje feil, for lineær
 
         segments.push_back(segment);
     }
@@ -43,4 +43,9 @@ void baneMinne::printStoredPoints() {
         Serial.print(", Right Pulse: ");
         Serial.println(point.rightPulseCount);
     }
+}
+
+void baneMinne::reset() {
+    path.clear;
+    segments.clear;
 }

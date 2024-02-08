@@ -9,6 +9,12 @@ simpleCar::simpleCar(double baseSpeed_, PIDparameters& kValues, motorPins& leftM
           baseSpeed(baseSpeed_) {
 }
 
+void simpleCar::initSensorPins() { //placeholder for now
+    for (int i = 0; i < numSensors; ++i) {
+        pinMode(sensorPins[i], INPUT);
+    }
+}
+
 void simpleCar::readSensors() {
     for (int i = 0; i < numSensors; ++i) {
         sensorValues[i] = digitalRead(sensorPins[i]);
@@ -43,9 +49,18 @@ void simpleCar::update() {
     float dt = (currentTime - lastUpdateTime) / 1000.0; // Delta tid i sekund.
     lastUpdateTime = currentTime;
 
-    float sensorInput = weightedValue; //må lage
+    float sensorInput = weightedValue;
     float sensorSetpoint = 0;
-    float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput); //todo: legg til motor outputs
+    float sensorOutput = sensorPID.regulate(dt, sensorSetpoint, sensorInput);
+
+    float adjustment = sensorOutput; //burde kanskje scales
+    float leftMotorSpeed = baseSpeed - adjustment; //todo må gjøre adjustment til PWM signal først, dette kan i teorien funke også bare ikke like accurate
+    float rightMotorSpeed = baseSpeed + adjustment;
+    leftMotorSpeed = constrain(leftMotorSpeed, 0, 255);
+    rightMotorSpeed = constrain(rightMotorSpeed, 0, 255);
+
+    leftMotor.setSpeed(leftMotorSpeed); //todo
+    rightMotor.setSpeed(rightMotorSpeed);
 
     saveToMemory();
     memory.printStoredPoints();
@@ -68,12 +83,6 @@ void simpleCar::saveToMemory() {
     unsigned long currentTime = millis() - startTime;
 
     memory.storePoint(leftPulseCount, rightPulseCount, currentTime);
-}
-
-double simpleCar::calculateSpeedCorrection(double correction) { //blir denne brukt
-    //Constrain correction
-    double maxCorrection = 1/2*baseSpeed;
-    return constrain(correction, -maxCorrection, maxCorrection);
 }
 
 encoder& simpleCar::getLeftEncoder() {
@@ -99,7 +108,7 @@ void simpleCar::followSegment() {
         unsigned long currentLeftPulseCount = leftMotor.getPulses();
         unsigned long currentRightPulseCount = rightMotor.getPulses();
 
-        bool hasReachedTarget = (currentLeftPulseCount >= segment.targetLeftPulseCount) &&
+        bool hasReachedTarget = (currentLeftPulseCount >= segment.targetLeftPulseCount) && //må ha nådd target encoder counts på begge motorene for å gå videre
                                 (currentRightPulseCount >= segment.targetRightPulseCount);
 
         if (hasReachedTarget) {
@@ -110,15 +119,27 @@ void simpleCar::followSegment() {
             }
         }
 
-        //todo: implementer hastighet calcs, noe sånt:
+        //todo: implementer hastighet calcs, noe sånt: men må bruke current time og target time, pluss manglende distance
 
         long distanceToLeftTarget = segment.targetLeftPulseCount - currentLeftPulseCount;
         long distanceToRightTarget = segment.targetRightPulseCount - currentRightPulseCount;
 
-        double leftSpeedAdjustment = calculateSpeedAdjustment(distanceToLeftTarget);
-        double rightSpeedAdjustment = calculateSpeedAdjustment(distanceToRightTarget);
+        double leftSpeedAdjustment = neededSpeed(distanceToLeftTarget); //todo
+        double rightSpeedAdjustment = neededSpeed(distanceToRightTarget);
 
-        leftMotor.setSpeed(baseSpeed + leftSpeedAdjustment); //todo: lage setSpeed som gjør encoder counts per millisekund til PWM
-        rightMotor.setSpeed(baseSpeed + rightSpeedAdjustment);
+        leftMotor.setSpeed(leftSpeedAdjustment);
+        rightMotor.setSpeed(rightSpeedAdjustment);
 
+    }
+
+    double simpleCar::neededSpeed(double correction) { //gjør encoder counts per millisekund til PWM HELT SIKKERT FEIL Æ E SLITEN
+        //må gjør encoder counts til RPM - tar distance som mangler med target speed for segmenter
+        unsigned long currentTime = millis();
+        unsigned long elapsedTime = currentTime - segmentStartTime;
+
+        unsigned long timeLeft = (segment.targetTime > elapsedTime) ? (segment.targetTime - elapsedTime) : 0;
+        double speedAdjustment = distanceToTarget / timeLeft; //counts per milli
+
+        double pwmValue = map(speedAdjustment, -maxSpeed, maxSpeed, -255, 255);
+        return constrain(pwmValue, -maxPWM, maxPWM);
     }
