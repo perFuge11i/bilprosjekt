@@ -27,7 +27,8 @@ void setup() {
 }
 
 void loop() {
-    theCar.run();
+    //theCar.run();
+    Serial.println(1);
 }
 
 
