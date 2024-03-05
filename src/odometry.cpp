@@ -1,34 +1,34 @@
-#include "odometriModell.hpp"
+#include "odometry.hpp"
 #include <math.h>
 #include "vektor.hpp"
 
-odometriModell::odometriModell(const float& carWidth) : trajectory(0,0), distanceTraveled(0,0){
+odometry::odometry(const float& carWidth) : trajectory(0, 0), distanceTraveled(0, 0){
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
     dWheel = carWidth/2;
 }
 
-void odometriModell::calcualteAngle() {
+void odometry::calcualteAngle() {
     angle = (dOuter - dInner)/2*dWheel;
 }
 
-void odometriModell::calculateR() {
+void odometry::calculateR() {
     r = dInner/angle+dWheel;
 }
 
-void odometriModell::calculate(const float& leftWheelSpeed, const float& rightWheelSpeed, const double& dTime) {
+void odometry::calculate(const double& leftWheelTravel, const double& rightWheelTravel) {
 
     bool turningLeft;
     //Finner ut hvilket hjul som er innerst/ytterst i buen
-    if (leftWheelSpeed < rightWheelSpeed) {
+    if (leftWheelTravel < rightWheelTravel) {
         //Kjører til venstre
-        dInner = leftWheelSpeed*dTime;
-        dOuter = rightWheelSpeed*dTime;
+        dInner = leftWheelTravel;
+        dOuter = rightWheelTravel;
         turningLeft = true;
 
-    } else if (leftWheelSpeed > rightWheelSpeed) {
+    } else if (leftWheelTravel > rightWheelTravel) {
         //Kjører til hoyre
-        dInner = rightWheelSpeed*dTime;
-        dOuter = leftWheelSpeed*dTime;
+        dInner = rightWheelTravel;
+        dOuter = leftWheelTravel;
         turningLeft = false;
 
     } else {
@@ -36,7 +36,7 @@ void odometriModell::calculate(const float& leftWheelSpeed, const float& rightWh
 
         //Finner ut hvor langt bilen kjørte i dette steget
         distanceTraveled.setValues(trajectory.x, trajectory.y);
-        distanceTraveled.scale(leftWheelSpeed*dTime);
+        distanceTraveled.scale(leftWheelTravel);
         return;
 
     }
@@ -71,11 +71,11 @@ void odometriModell::calculate(const float& leftWheelSpeed, const float& rightWh
     trajectory.transform(basisX,basisY);
 }
 
-vektor& odometriModell::getDistanceTravelled() {
+vektor& odometry::getDistanceTravelled() {
     return distanceTraveled;
 }
 
-vektor& odometriModell::getTrajectory() {
+vektor& odometry::getTrajectory() {
     return trajectory;
 }
 

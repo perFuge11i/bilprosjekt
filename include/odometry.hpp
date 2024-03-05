@@ -1,9 +1,9 @@
-#ifndef BILPROSJEKT_ODOMETRIMODELL_HPP
-#define BILPROSJEKT_ODOMETRIMODELL_HPP
+#ifndef BILPROSJEKT_ODOMETRY_HPP
+#define BILPROSJEKT_ODOMETRY_HPP
 
 #include "vektor.hpp"
 
-class odometriModell {
+class odometry {
 private:
     float dWheel;
     float r;
@@ -21,9 +21,10 @@ private:
     void calculateR();
 
 public:
-    odometriModell(const float& carWidth);
-    void calculate(const float& leftWheelSpeed, const float& rightWheelSpeed, const double& dTime);
+    odometry(const float& carWidth);
+    void calculate(const double& leftWheelTravel, const double& rightWheelTravel);
     vektor& getDistanceTravelled();
     vektor& getTrajectory();
 };
-#endif //BILPROSJEKT_ODOMETRIMODELL_HPP
+
+#endif //BILPROSJEKT_ODOMETRY_HPP
