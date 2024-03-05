@@ -1,8 +1,8 @@
-#include <vector>
+//#include <vector> TODO: fix vector
 #include "structures.hpp"
 #include "Arduino.h"
 
-class trackMemory {
+/*class trackMemory {
 private:
     std::vector<point> carPath;
     std::vector<point> linePath;
@@ -12,6 +12,6 @@ public:
     void storeToLine(point& pathPoint);
     void printStoredPoints();
     void reset();
-};
+};*/
 
 

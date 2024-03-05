@@ -1,7 +1,7 @@
 #include "trackMemory.hpp"
 
 
-void trackMemory::storeToCar(point& pathPoint) {
+/*void trackMemory::storeToCar(point& pathPoint) {
     carPath.push_back(pathPoint);
 }
 
@@ -34,4 +34,6 @@ void trackMemory::printStoredPoints() {
 void trackMemory::reset() {
     carPath.clear();
     linePath.clear();
-}
+}*/ 
+
+// TODO: fix vector

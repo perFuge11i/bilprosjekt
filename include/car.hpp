@@ -16,7 +16,7 @@ class car {
 private:
     motor leftMotor;
     motor rightMotor;
-    trackMemory memory;
+    //trackMemory memory; TODO: fix vector
     stateMachine sensorValSM;
     odometry odometryModel;
     printer dataPrinter;

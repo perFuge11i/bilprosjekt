@@ -13,6 +13,11 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
 
     double wheelCircumfrence = M_PI*dimesions.wheelDiameter;
     travelPrPulse = wheelCircumfrence/dimesions.pulsesInRotation;
+
+
+    //TODO: bare test
+    leftMotor.setSpeed(0);
+    rightMotor.setSpeed(0);
 }
 
 void car::run() {
@@ -21,14 +26,14 @@ void car::run() {
 
     sensorValSM.update(sensorState);
 
-    leftMotor.setSpeed(sensorValSM.getLeftSpeed());
-    rightMotor.setSpeed(sensorValSM.getRightSpeed());
+    //leftMotor.setSpeed(sensorValSM.getLeftSpeed());
+    //rightMotor.setSpeed(sensorValSM.getRightSpeed());
 
     calculateTravel();
     odometryModel.calculate(leftTravel, rightTravel);
     updateCarPosition();
 
-    saveToMemory();
+    //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarTrajectory(odometryModel.getTrajectory().getStructure());
     dataPrinter.print();
@@ -64,7 +69,7 @@ void car::updateTime() {
 }
 
 void car::saveToMemory() {
-    memory.storeToCar(carPosition);
+    //memory.storeToCar(carPosition); TODO: fix vector
 }
 
 encoder& car::getLeftEncoder() {
@@ -76,5 +81,5 @@ encoder &car::getRightEncoder() {
 }
 
 void car::resetMemory() {
-    memory.reset();
+    //memory.reset(); TODO: fix vector
 }

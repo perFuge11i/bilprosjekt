@@ -6,7 +6,7 @@ motor::motor(motorPins& pins) : motorEncoder(pins.encoderPin) {
 }
 
 void motor::setSpeed(uint8_t speed) {
-    analogWrite(PMWpin, speed)
+    analogWrite(PMWpin, speed);
 }
 
 double motor::getPulses() const {

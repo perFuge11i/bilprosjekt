@@ -74,11 +74,11 @@ void stateMachine::setBaseSpeed(uint8_t baseSpeed_) {
     baseSpeed = baseSpeed_;
 }
 
-int8_t stateMachine::getLeftSpeed() {
+uint8_t stateMachine::getLeftSpeed() {
     return leftMotorSpeed;
 }
 
-int8_t stateMachine::getRightSpeed() {
+uint8_t stateMachine::getRightSpeed() {
     return rightMotorSpeed;
 }
 

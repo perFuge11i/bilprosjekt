@@ -11,5 +11,6 @@ void printer::setCarTrajectory(point &carTrajectory) {
 }
 
 void printer::print() {
-    Serial.write(plotData);
+    for (uint8_t i = 0; i <= 6; i++)
+        Serial.write((byte *)&plotData[i], sizeof(plotData[i]));
 }
