@@ -5,8 +5,8 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
           rightMotor(rightMotorPins),
           sensorValSM(baseSpeed),
           odometryModel(dimesions.width, dimesions.length),
-          carPositionVector(0, 0),
-          carDirectionVector(0, 0) {
+          carPositionVector(0, 0), carDirectionVector(0, 0),
+          linePositionvector(0,0){
     lastTime = millis();
 
     lastLeftPulseCount = leftMotor.getPulses();
@@ -32,7 +32,8 @@ void car::run() {
 
     calculateTravel();
     odometryModel.calculate(leftTravel, rightTravel);
-    updateCarPosition();
+    odometryModel.calculateLine(sensorOffset);
+    updatePosition();
 
     /*Serial.print(leftMotor.getPulses());
     Serial.print(" | ");
@@ -49,10 +50,15 @@ void car::run() {
     dataPrinter.print();
 }
 
-void car::updateCarPosition() {
+void car::updatePosition() {
     carPositionVector.add(odometryModel.getDistanceTravelled());
     carPosition.x = carPositionVector.x;
     carPosition.y = carPositionVector.y;
+
+    linePositionvector = odometryModel.getLineDistance();
+    linePositionvector.add(carPositionVector);
+    linePosition.x = linePositionvector.x;
+    linePosition.y = linePositionvector.y;
 
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
@@ -72,7 +78,7 @@ void car::calculateTravel() {
 
 void car::readSensors() {
     if (Serial.available() > 0) {
-        localSensorPos = Serial.read();
+        sensorOffset = Serial.read();
     }
 }
 

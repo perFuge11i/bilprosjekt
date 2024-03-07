@@ -23,7 +23,7 @@ private:
     //Hvor langt bilen kjørte i m;
     vektor distanceTraveled;
 
-    vektor lineOfset;
+    vektor lineOffset;
     vektor baseToFront;
     vektor lineDistance;
 
@@ -33,7 +33,7 @@ private:
 public:
     odometry(const double& carWidth, const double& carLength);
     void calculate(const double& leftWheelTravel, const double& rightWheelTravel);
-    void calculateLine(const double& sensorOfset);
+    void calculateLine(const double& sensorOffset);
     vektor& getDistanceTravelled();
     vektor& getTrajectory();
     vektor& getLineDistance();

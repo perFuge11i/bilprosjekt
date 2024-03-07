@@ -1,7 +1,7 @@
 #include "odometry.hpp"
 
 odometry::odometry(const double& carWidth, const double& carLength) :
-        trajectory(0, 1), distanceTraveled(0, 0), lineOfset(0,0),
+        trajectory(0, 1), distanceTraveled(0, 0), lineOffset(0,0),
         baseToFront(0,carLength), lineDistance(0,0),
         basisX(0,0), basisY(0,0) {
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
@@ -70,11 +70,11 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
     trajectory.transform(basisX,basisY);
 }
 
-void odometry::calculateLine(const double &sensorOfset) {
-    lineOfset.x = sensorOfset;
+void odometry::calculateLine(const double &sensorOffset) {
+    lineOffset.x = sensorOffset;
 
     lineDistance.add(baseToFront);
-    lineDistance.add(lineOfset);
+    lineDistance.add(lineOffset);
     lineDistance.transform(basisX, basisY);
 }
 
