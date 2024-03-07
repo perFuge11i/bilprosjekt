@@ -16,7 +16,6 @@ public:
     void scale(const double scalar);
     void add(const vektor vektor2);
     void transform(const vektor xBasis, const vektor yBasis);
-    point& getStructure();
 };
 
 #endif //BILPROSJEKT_VEKTOR_HPP
