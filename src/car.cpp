@@ -47,6 +47,7 @@ void car::run() {
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
+    dataPrinter.setLinePosition(linePosition);
     dataPrinter.print();
 }
 
