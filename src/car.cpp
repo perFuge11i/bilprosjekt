@@ -4,8 +4,9 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
         : leftMotor(leftMotorPins),
           rightMotor(rightMotorPins),
           sensorValSM(baseSpeed),
-          odometryModel(dimesions.width),
-          carPositionVector(0, 0) {
+          odometryModel(dimesions.width, dimesions.length),
+          carPositionVector(0, 0), carDirectionVector(0, 0),
+          linePositionvector(0,0){
     lastTime = millis();
 
     lastLeftPulseCount = leftMotor.getPulses();
@@ -24,25 +25,40 @@ void car::run() {
     readSensors();
     updateTime();
 
-    sensorValSM.update(sensorState);
+    //sensorValSM.update(sensorState);
 
     //leftMotor.setSpeed(sensorValSM.getLeftSpeed());
     //rightMotor.setSpeed(sensorValSM.getRightSpeed());
 
     calculateTravel();
     odometryModel.calculate(leftTravel, rightTravel);
-    updateCarPosition();
+    odometryModel.calculateLine(sensorOffset);
+    updatePosition();
 
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
-    dataPrinter.setCarTrajectory(odometryModel.getTrajectory().getStructure());
-    dataPrinter.print();
+    dataPrinter.setCarDirection(carDirection);
+    dataPrinter.setLinePosition(linePosition);
+    //dataPrinter.print();
 }
 
-void car::updateCarPosition() {
+void car::updatePosition() {
     carPositionVector.add(odometryModel.getDistanceTravelled());
     carPosition.x = carPositionVector.x;
     carPosition.y = carPositionVector.y;
+
+    linePositionvector = odometryModel.getLineDistance();
+    linePositionvector.add(carPositionVector);
+    linePosition.x = linePositionvector.x;
+    linePosition.y = linePositionvector.y;
+    Serial.print(linePosition.x);
+    Serial.print(" | ");
+    Serial.print(linePosition.y);
+    Serial.print(" | ");
+    Serial.println();
+    carDirectionVector = odometryModel.getTrajectory();
+    carDirection.x = carDirectionVector.x;
+    carDirection.y = carDirectionVector.y;
 }
 
 void car::calculateTravel() {
@@ -58,8 +74,11 @@ void car::calculateTravel() {
 
 void car::readSensors() {
     if (Serial.available() > 0) {
-        sensorState = Serial.read();
+        readings = Serial.read();
     }
+    sensorOffset = readings/10;
+    Serial.print(sensorOffset);
+    Serial.print(" | ");
 }
 
 void car::updateTime() {

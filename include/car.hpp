@@ -21,7 +21,8 @@ private:
     odometry odometryModel;
     printer dataPrinter;
 
-    uint8_t sensorState;
+    int8_t readings;
+    double sensorOffset;
 
     double lastTime;
     double dt;
@@ -35,12 +36,16 @@ private:
 
     point carPosition;
     vektor carPositionVector;
+    point carDirection;
+    vektor carDirectionVector;
+    point linePosition;
+    vektor linePositionvector;
 
     void saveToMemory();
     void readSensors();
     void updateTime();
     void calculateTravel();
-    void updateCarPosition();
+    void updatePosition();
 
 public:
     car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions);

@@ -33,10 +33,3 @@ double vektor::getLength() const {
     double length = sqrt(x*x + y*y);
     return length;
 }
-
-point &vektor::getStructure() {
-    point vektorData;
-    vektorData.x = x;
-    vektorData.y = y;
-    return vektorData;
-}

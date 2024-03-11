@@ -1,23 +1,22 @@
 #include "car.hpp"
-#include "encoder.hpp"
 #include "structures.hpp"
 
 const uint8_t baseSpeed = 100;
 
 
-motorPins leftMotorPins {2, 3};
-motorPins rightMotorPins {2, 3};
+motorPins leftMotorPins {3, 10};
+motorPins rightMotorPins {2, 9};
 
-carDimesions dimesions {0, 0, 0, 0, 0};
+carDimesions dimesions {12, 16, 0, 2, 154};
 
 car theCar(baseSpeed, leftMotorPins, rightMotorPins, dimesions);
 
 void pulseLeft() {
     theCar.getLeftEncoder().updateCount();
-};
+}
 void pulseRight() {
     theCar.getRightEncoder().updateCount();
-};
+}
 
 void setup() {
     Serial.begin(9600);
@@ -27,11 +26,10 @@ void setup() {
 }
 
 void loop() {
-    //theCar.run();
-    Serial.println(1);
+    theCar.run();
 }
 
 
-
+// pio device monitor --port /dev/cu.usbserial-10 --baud 9600
 
 

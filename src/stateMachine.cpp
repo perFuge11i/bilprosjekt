@@ -7,52 +7,52 @@ stateMachine::stateMachine(uint8_t baseSpeed_) {
 void stateMachine::update(uint8_t state) {
     switch (state) {
         //høyre for linja
-        case 8:
+        case 1:
             adjustMotorSpeed(0, 5);
             break;
-        case 9:
+        case 2:
             adjustMotorSpeed(0, 10);
             break;
-        case 10:
+        case 3:
             adjustMotorSpeed(0, 25);
             break;
-        case 11:
+        case 4:
             adjustMotorSpeed(0, 40);
             break;
-        case 12:
+        case 5:
             adjustMotorSpeed(0, 55);
             break;
-        case 13:
+        case 6:
             adjustMotorSpeed(0, 65);
             break;
-        case 14:
+        case 7:
             adjustMotorSpeed(-5, 80);
             break;
 
-        case 7: //midt på
+        case 0: //midt på
             adjustMotorSpeed(0, 0);
             break;
 
             //venstre for linja
-        case 6:
+        case -1:
             adjustMotorSpeed(5, 0);
             break;
-        case 5:
+        case -2:
             adjustMotorSpeed(10, 0);
             break;
-        case 4:
+        case -3:
             adjustMotorSpeed(25, 0);
             break;
-        case 3:
+        case -4:
             adjustMotorSpeed(40, 0);
             break;
-        case 2:
+        case -5:
             adjustMotorSpeed(55, 0);
             break;
-        case 1:
+        case -6:
             adjustMotorSpeed(65, 0);
             break;
-        case 0:
+        case -7:
             adjustMotorSpeed(80, -5);
             break;
 

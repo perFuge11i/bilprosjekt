@@ -1,18 +1,19 @@
 #include "odometry.hpp"
-#include <math.h>
-#include "vektor.hpp"
 
-odometry::odometry(const float& carWidth) : trajectory(0, 0), distanceTraveled(0, 0){
+odometry::odometry(const double& carWidth, const double& carLength) :
+        trajectory(0, 1), distanceTraveled(0, 0),
+        lineDistance(0,0), basisX(0,0), basisY(0,0) {
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
     dWheel = carWidth/2;
+    length = carLength;
 }
 
 void odometry::calcualteAngle() {
-    angle = (dOuter - dInner)/2*dWheel;
+    angle = (dOuter - dInner)/(2*dWheel);
 }
 
 void odometry::calculateR() {
-    r = dInner/angle+dWheel;
+    r = ((dInner+dOuter)*dWheel)/(dOuter-dInner);
 }
 
 void odometry::calculate(const double& leftWheelTravel, const double& rightWheelTravel) {
@@ -24,13 +25,11 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
         dInner = leftWheelTravel;
         dOuter = rightWheelTravel;
         turningLeft = true;
-
     } else if (leftWheelTravel > rightWheelTravel) {
         //Kjører til hoyre
         dInner = rightWheelTravel;
         dOuter = leftWheelTravel;
         turningLeft = false;
-
     } else {
         //Kjører rett frem
 
@@ -45,8 +44,8 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
     calculateR();
 
     //Setter basis for lokal koordinatsystem (fra hvor bilen peker)
-    vektor basisX(trajectory.y,-trajectory.x);
-    vektor basisY(trajectory.x,trajectory.y);
+    basisX.setValues(trajectory.y,-trajectory.x);
+    basisY.setValues(trajectory.x,trajectory.y);
 
     if (turningLeft == true) {
         //Finner ut hvor langt bilen kjørte i dette steget (lokalt)
@@ -71,6 +70,20 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
     trajectory.transform(basisX,basisY);
 }
 
+void odometry::calculateLine(const double sensorOffset) {
+    lineDistance.setValues(sensorOffset,length);
+
+    Serial.print(lineDistance.x);
+    Serial.print(" | ");
+    Serial.print(lineDistance.y);
+    Serial.print(" | ");
+    lineDistance.transform(basisX, basisY);
+    Serial.print(lineDistance.x);
+    Serial.print(" | ");
+    Serial.print(lineDistance.y);
+    Serial.print(" | ");
+}
+
 vektor& odometry::getDistanceTravelled() {
     return distanceTraveled;
 }
@@ -79,4 +92,7 @@ vektor& odometry::getTrajectory() {
     return trajectory;
 }
 
+vektor& odometry::getLineDistance() {
+    return lineDistance;
+}
 
