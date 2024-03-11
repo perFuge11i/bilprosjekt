@@ -35,20 +35,11 @@ void car::run() {
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
-    /*Serial.print(leftMotor.getPulses());
-    Serial.print(" | ");
-    Serial.print(rightMotor.getPulses());
-    Serial.print(" | ");
-    Serial.print(odometryModel.getDistanceTravelled().x);
-    Serial.print(" | ");
-    Serial.print(odometryModel.getDistanceTravelled().y);
-    Serial.println();*/
-
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
     dataPrinter.setLinePosition(linePosition);
-    dataPrinter.print();
+    //dataPrinter.print();
 }
 
 void car::updatePosition() {
@@ -60,7 +51,11 @@ void car::updatePosition() {
     linePositionvector.add(carPositionVector);
     linePosition.x = linePositionvector.x;
     linePosition.y = linePositionvector.y;
-
+    Serial.print(linePosition.x);
+    Serial.print(" | ");
+    Serial.print(linePosition.y);
+    Serial.print(" | ");
+    Serial.println();
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
     carDirection.y = carDirectionVector.y;
@@ -79,8 +74,11 @@ void car::calculateTravel() {
 
 void car::readSensors() {
     if (Serial.available() > 0) {
-        sensorOffset = Serial.read();
+        readings = Serial.read();
     }
+    sensorOffset = readings/10;
+    Serial.print(sensorOffset);
+    Serial.print(" | ");
 }
 
 void car::updateTime() {

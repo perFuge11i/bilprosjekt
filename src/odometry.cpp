@@ -1,11 +1,11 @@
 #include "odometry.hpp"
 
 odometry::odometry(const double& carWidth, const double& carLength) :
-        trajectory(0, 1), distanceTraveled(0, 0), lineOffset(0,0),
-        baseToFront(0,carLength), lineDistance(0,0),
-        basisX(0,0), basisY(0,0) {
+        trajectory(0, 1), distanceTraveled(0, 0),
+        lineDistance(0,0), basisX(0,0), basisY(0,0) {
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
     dWheel = carWidth/2;
+    length = carLength;
 }
 
 void odometry::calcualteAngle() {
@@ -70,12 +70,18 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
     trajectory.transform(basisX,basisY);
 }
 
-void odometry::calculateLine(const double &sensorOffset) {
-    lineOffset.x = sensorOffset;
+void odometry::calculateLine(const double sensorOffset) {
+    lineDistance.setValues(sensorOffset,length);
 
-    lineDistance.add(baseToFront);
-    lineDistance.add(lineOffset);
+    Serial.print(lineDistance.x);
+    Serial.print(" | ");
+    Serial.print(lineDistance.y);
+    Serial.print(" | ");
     lineDistance.transform(basisX, basisY);
+    Serial.print(lineDistance.x);
+    Serial.print(" | ");
+    Serial.print(lineDistance.y);
+    Serial.print(" | ");
 }
 
 vektor& odometry::getDistanceTravelled() {

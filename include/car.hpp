@@ -21,6 +21,7 @@ private:
     odometry odometryModel;
     printer dataPrinter;
 
+    int8_t readings;
     double sensorOffset;
 
     double lastTime;
