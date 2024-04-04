@@ -7,7 +7,7 @@ const uint8_t baseSpeed = 100;
 motorPins leftMotorPins {3, 10};
 motorPins rightMotorPins {2, 9};
 
-carDimesions dimesions {12, 16, 0, 2, 154};
+carDimesions dimesions {12, 16, 0, 2, 29};
 
 car theCar(baseSpeed, leftMotorPins, rightMotorPins, dimesions);
 
