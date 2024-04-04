@@ -1,17 +1,20 @@
 #ifndef BILPROSJEKT_STRUCTURES_HPP
 #define BILPROSJEKT_STRUCTURES_HPP
 
+#include "Arduino.h"
+
 struct carDimesions {
-    float length = 0;//Midt mellom hjulene til midten av sensorarray
-    float width = 0;//Mellom innsiden av hjulene
-    float arrrayWidth = 0;//Mellom ytterste sensorer
-    float wheelDiameter = 0;//Diamter...
+    double length;//Midt mellom hjulene til midten av sensorarray
+    double width;//Mellom innsiden av hjulene
+    double arrrayWidth;//Mellom ytterste sensorer
+    double wheelDiameter;//Diamter...
+    double pulsesInRotation;//Finnutda
 };
 
-struct simplePathPoint {
-    unsigned long leftPulseCount;
-    unsigned long rightPulseCount;
-    unsigned long time;
+struct point {
+    double x;
+    double y;
+    unsigned long timeStamp;
 };
 
 struct PIDparameters {
@@ -21,13 +24,8 @@ struct PIDparameters {
 };
 
 struct motorPins {
-    unsigned int encoderPin;
-    unsigned int PMWpin;
+    uint8_t encoderPin;
+    uint8_t PMWpin;
 };
 
-struct pathSegment {
-    unsigned long targetLeftPulseCount;
-    unsigned long targetRightPulseCount;
-    unsigned long targetTime;
-};
 #endif //BILPROSJEKT_STRUCTURES_HPP

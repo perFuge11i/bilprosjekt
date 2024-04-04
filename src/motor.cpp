@@ -1,16 +1,12 @@
 #include "motor.hpp"
 
 motor::motor(motorPins& pins) : motorEncoder(pins.encoderPin) {
-
-    pinMode(pins.PMWpin, INPUT);
+    PMWpin = pins.PMWpin;
+    pinMode(PMWpin, INPUT);
 }
 
-void motor::setSpeed(double speed) {
-    // TODO: skriv til motorpins
-}
-
-void motor::pulse(unsigned int pulseCount) {
-    // TODO: Lag funksjon
+void motor::setSpeed(uint8_t speed) {
+    analogWrite(PMWpin, speed);
 }
 
 double motor::getPulses() const {

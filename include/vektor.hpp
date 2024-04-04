@@ -1,6 +1,9 @@
 #ifndef BILPROSJEKT_VEKTOR_HPP
 #define BILPROSJEKT_VEKTOR_HPP
 
+#include "structures.hpp"
+#include "math.h"
+
 class vektor {
 public:
     double x;
