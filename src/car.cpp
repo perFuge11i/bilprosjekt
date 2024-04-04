@@ -15,6 +15,9 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
     double wheelCircumfrence = M_PI*dimesions.wheelDiameter;
     travelPrPulse = wheelCircumfrence/dimesions.pulsesInRotation;
 
+    linePosition.x = 0;
+    linePosition.y = 0;
+    sensorOffset = 111;
 
     //TODO: bare test
     leftMotor.setSpeed(0);
@@ -39,7 +42,8 @@ void car::run() {
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
     dataPrinter.setLinePosition(linePosition);
-    //dataPrinter.print();
+
+    dataPrinter.print();
 }
 
 void car::updatePosition() {
@@ -48,14 +52,12 @@ void car::updatePosition() {
     carPosition.y = carPositionVector.y;
 
     linePositionvector = odometryModel.getLineDistance();
-    linePositionvector.add(carPositionVector);
-    linePosition.x = linePositionvector.x;
-    linePosition.y = linePositionvector.y;
-    Serial.print(linePosition.x);
-    Serial.print(" | ");
-    Serial.print(linePosition.y);
-    Serial.print(" | ");
-    Serial.println();
+    if (linePositionvector.x != 111) {
+        linePositionvector.add(carPositionVector);
+        linePosition.x = linePositionvector.x;
+        linePosition.y = linePositionvector.y;
+    }
+
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
     carDirection.y = carDirectionVector.y;
@@ -76,9 +78,11 @@ void car::readSensors() {
     if (Serial.available() > 0) {
         readings = Serial.read();
     }
-    sensorOffset = readings/10;
-    Serial.print(sensorOffset);
-    Serial.print(" | ");
+    if (readings == 111) {
+        sensorOffset = readings;
+    } else {
+        sensorOffset = readings/10;
+    }
 }
 
 void car::updateTime() {

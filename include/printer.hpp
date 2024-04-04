@@ -3,9 +3,10 @@
 
 #include "structures.hpp"
 #include "Arduino.h"
+#include "ArduinoJson.h"
 
 class printer{
-    double plotData[6];
+    JsonDocument doc;
 public:
     void setCarPosition(point& carPosition);
     void setCarDirection(point& carDirection);

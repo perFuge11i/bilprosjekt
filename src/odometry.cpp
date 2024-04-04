@@ -71,17 +71,12 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
 }
 
 void odometry::calculateLine(const double sensorOffset) {
-    lineDistance.setValues(sensorOffset,length);
-
-    Serial.print(lineDistance.x);
-    Serial.print(" | ");
-    Serial.print(lineDistance.y);
-    Serial.print(" | ");
-    lineDistance.transform(basisX, basisY);
-    Serial.print(lineDistance.x);
-    Serial.print(" | ");
-    Serial.print(lineDistance.y);
-    Serial.print(" | ");
+    if (sensorOffset == 111) {
+        lineDistance.setValues(111,111);
+    } else {
+        lineDistance.setValues(sensorOffset,length);
+        lineDistance.transform(basisX, basisY);
+    }
 }
 
 vektor& odometry::getDistanceTravelled() {
