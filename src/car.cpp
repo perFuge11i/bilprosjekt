@@ -42,7 +42,7 @@ void car::run() {
     odometryModel.calculateInverse(carPositionVector, linePositionvector);
 
     leftMotor.setSpeed(baseSpd * odometryModel.getLeftAdjustment());
-    rightMotor.setSpeed(odometryModel.getRightAdjustment());
+    rightMotor.setSpeed(baseSpd * odometryModel.getRightAdjustment());
 
 
     //saveToMemory(); TODO: fix vector

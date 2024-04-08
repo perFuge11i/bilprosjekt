@@ -87,20 +87,28 @@ void odometry::calculateInverse(const vektor &carPosition, const vektor &linePos
     double venstrehoyre = trajectory.x*carLine.x-trajectory.y*carLine.y;
 
     int dir;
+
+    double r = dir*(carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
+
+    innerWheel = r - 8;
+    outerWheel = r + 8;
+
     if (venstrehoyre > 0) {
         dir = 1;
+        offsetL = 1;
+        offsetR = innerWheel/outerWheel;
     } else if (venstrehoyre < 0) {
         dir = -1;
+        offsetR = 1;
+        offsetL = innerWheel/outerWheel
     } else {
         offsetL = 1;
         offsetR = 1;
         return;
     }
 
-    double r = dir*(carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
-
-    offsetL = 1 + dWheel/r;
-    offsetR = 1 - dWheel/r;
+    //offsetL = 1 + dWheel/r;
+    //offsetR = 1 - dWheel/r;
 
     return;
 }
