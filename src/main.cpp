@@ -1,7 +1,7 @@
 #include "car.hpp"
 #include "structures.hpp"
 
-const uint8_t baseSpeed = 40;
+const uint8_t baseSpeed = 120;
 
 
 motorPins leftMotorPins {3, 10};
