@@ -26,6 +26,9 @@ private:
 
     vektor lineDistance;
 
+    double offsetL;
+    double offsetR;
+
     void calcualteAngle();
     void calculateR();
 
@@ -33,9 +36,12 @@ public:
     odometry(const double& carWidth, const double& carLength);
     void calculate(const double& leftWheelTravel, const double& rightWheelTravel);
     void calculateLine(const double sensorOffset);
+    void calculateInverse(const vektor& carPosition, const vektor& linePosition);
     vektor& getDistanceTravelled();
     vektor& getTrajectory();
     vektor& getLineDistance();
+    double getLeftAdjustmet();
+    double getRightAdjustmet();
 };
 
 #endif //BILPROSJEKT_ODOMETRY_HPP

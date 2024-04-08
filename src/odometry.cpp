@@ -6,6 +6,8 @@ odometry::odometry(const double& carWidth, const double& carLength) :
     //Avstanden fra senter til hjulet er halvparten av bilens bredde
     dWheel = carWidth/2;
     length = carLength;
+    offsetR = 1;
+    offsetL = 1;
 }
 
 void odometry::calcualteAngle() {
@@ -79,6 +81,29 @@ void odometry::calculateLine(const double sensorOffset) {
     }
 }
 
+void odometry::calculateInverse(const vektor &carPosition, const vektor &linePosition) {
+    vektor carLine(linePosition.x-carPosition.x, linePosition.y-carPosition.y);
+
+    double venstrehoyre = trajectory.x*carLine.x-trajectory.y*carLine.y;
+
+    int dir;
+    if (venstrehoyre > 0) {
+        dir = 1;
+    } else if (venstrehoyre < 0) {
+        dir = -1;
+    } else {
+        offsetL = 1;
+        offsetR = 1;
+        return;
+    }
+
+    double r = (carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
+
+    offsetL = 1 + dWheel/r;
+    offsetR = 1 - dWheel/r;
+
+    return;
+}
 vektor& odometry::getDistanceTravelled() {
     return distanceTraveled;
 }
@@ -91,3 +116,10 @@ vektor& odometry::getLineDistance() {
     return lineDistance;
 }
 
+double odometry::getLeftAdjustmet() {
+    return offsetL;
+}
+
+double odometry::getRightAdjustmet() {
+    return offsetR;
+}
