@@ -40,8 +40,8 @@ public:
     vektor& getDistanceTravelled();
     vektor& getTrajectory();
     vektor& getLineDistance();
-    double getLeftAdjustmet();
-    double getRightAdjustmet();
+    double getLeftAdjustment();
+    double getRightAdjustment();
 };
 
 #endif //BILPROSJEKT_ODOMETRY_HPP

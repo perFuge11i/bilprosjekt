@@ -34,6 +34,8 @@ private:
     double leftTravel;
     double rightTravel;
 
+    uint8_t baseSpd;
+
     point carPosition;
     vektor carPositionVector;
     point carDirection;

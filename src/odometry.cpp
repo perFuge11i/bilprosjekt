@@ -119,10 +119,10 @@ vektor& odometry::getLineDistance() {
     return lineDistance;
 }
 
-double odometry::getLeftAdjustmet() {
+double odometry::getLeftAdjustment() {
     return offsetL;
 }
 
-double odometry::getRightAdjustmet() {
+double odometry::getRightAdjustment() {
     return offsetR;
 }

@@ -14,6 +14,7 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
 
     double wheelCircumfrence = M_PI*dimesions.wheelDiameter;
     travelPrPulse = wheelCircumfrence/dimesions.pulsesInRotation;
+    baseSpd = baseSpeed;
 
     linePosition.x = 0;
     linePosition.y = 0;
@@ -38,12 +39,10 @@ void car::run() {
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
-    odometryModel.calculateInverse(carPosition, linePosition);
-    leftSpeed = baseSpeed * odometryModel.getLeftAdjustment();
-    rightSpeed = baseSpeed * odometryModel.getRightAdjustment();
+    odometryModel.calculateInverse(carPositionVector, linePositionvector);
 
-    leftMotor.setSpeed(leftSpeed);
-    rightMotor.setSpeed(rightSpeed);
+    leftMotor.setSpeed(baseSpd * odometryModel.getLeftAdjustment());
+    rightMotor.setSpeed(odometryModel.getRightAdjustment());
 
 
     //saveToMemory(); TODO: fix vector
