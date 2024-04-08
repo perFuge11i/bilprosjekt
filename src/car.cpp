@@ -38,6 +38,14 @@ void car::run() {
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
+    odometryModel.calculateInverse(carPosition, linePosition);
+    leftSpeed = baseSpeed * odometryModel.getLeftAdjustment();
+    rightSpeed = baseSpeed * odometryModel.getRightAdjustment();
+
+    leftMotor.setSpeed(leftSpeed);
+    rightMotor.setSpeed(rightSpeed);
+
+
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
@@ -85,6 +93,7 @@ void car::readSensors() {
     }
 }
 
+
 void car::updateTime() {
     currentTime = millis();
     dt = currentTime - lastTime;
@@ -106,3 +115,4 @@ encoder &car::getRightEncoder() {
 void car::resetMemory() {
     //memory.reset(); TODO: fix vector
 }
+
