@@ -104,6 +104,22 @@ void car::updateTime() {
     lastTime = currentTime;
 }
 
+void car::setMotorSpeeds(PID& pidController, float baseSpeed, float currentAngle) {
+    float targetAngle = 1;
+    float dt = ; //time since last update
+
+    float correction = pidController.regulate(dt, targetAngle, currentAngle);
+
+    float leftMotorSpeed = baseSpeed - correction;
+    float rightMotorSpeed = baseSpeed + correction;
+
+    leftMotorSpeed = constrain(leftMotorSpeed, 0, 255);
+    rightMotorSpeed = constrain(rightMotorSpeed, 0, 255);
+
+    leftMotor.setSpeed(leftMotorSpeed);
+    rightMotor.setSpeed(rightMotorSpeed);
+}
+
 void car::saveToMemory() {
     //memory.storeToCar(carPosition); TODO: fix vector
 }
