@@ -84,13 +84,16 @@ void odometry::calculateLine(const double sensorOffset) {
 void odometry::calculateInverse(const vektor &carPosition, const vektor &linePosition) {
     vektor carLine(linePosition.x-carPosition.x, linePosition.y-carPosition.y);
 
-    double venstrehoyre = trajectory.x*carLine.x-trajectory.y*carLine.y;
+    double venstrehoyre = trajectory.x*carLine.y-trajectory.y*carLine.x;
+
 
     int dir;
 
     if (venstrehoyre > 0) {
+        //venstre
         dir = 1;
     } else if (venstrehoyre < 0) {
+        //Høyre
         dir = -1;
     } else {
         offsetL = 1;
@@ -101,16 +104,12 @@ void odometry::calculateInverse(const vektor &carPosition, const vektor &linePos
     double r = dir*(carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
 
 
-    if (venstrehoyre > 0) {
+    if (dir == 1) {
+        offsetL = (r - 8)/(r + 8);
+        offsetR = 1;
+    } else if (dir == -1) {
         offsetL = 1;
         offsetR = (r - 8)/(r + 8);
-    } else if (venstrehoyre < 0) {
-        offsetR = 1;
-        offsetL = (r - 8)/(r + 8);
-    } else {
-        offsetL = 1;
-        offsetR = 1;
-        return;
     }
 
     Serial.print(offsetL);
