@@ -1,12 +1,12 @@
 #include "car.hpp"
 
-car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions)
+car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues)
         : leftMotor(leftMotorPins),
           rightMotor(rightMotorPins),
           sensorValSM(baseSpeed),
           odometryModel(dimesions.width, dimesions.length),
           carPositionVector(0, 0), carDirectionVector(0, 0),
-          linePositionvector(0,0){
+          linePositionvector(0,0), anglePID(kValues.kP, kValues.kI, kValues.kD){
     lastTime = millis();
 
     lastLeftPulseCount = leftMotor.getPulses();
@@ -40,15 +40,7 @@ void car::run() {
 
     angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
 
-    //TODO: PID
-
-    if (adjustment >= 0) {
-        leftMotor.setSpeed(baseSpd - adjustment);
-        rightMotor.setSpeed(baseSpd);
-    } else if (adjustment < 0) {
-        leftMotor.setSpeed(baseSpd);
-        rightMotor.setSpeed(baseSpd + adjustment);
-    }
+    setMotorSpeeds();
 
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
@@ -104,7 +96,7 @@ void car::updateTime() {
     lastTime = currentTime;
 }
 
-void car::setMotorSpeeds(PID& pidController, float baseSpeed, float currentAngle) {
+void car::setMotorSpeeds() {
     float targetAngle = 1;
     float dt = ; //time since last update
 
@@ -116,8 +108,13 @@ void car::setMotorSpeeds(PID& pidController, float baseSpeed, float currentAngle
     leftMotorSpeed = constrain(leftMotorSpeed, 0, 255);
     rightMotorSpeed = constrain(rightMotorSpeed, 0, 255);
 
-    leftMotor.setSpeed(leftMotorSpeed);
-    rightMotor.setSpeed(rightMotorSpeed);
+    if (correction >= 0) {
+        leftMotor.setSpeed(leftMotorSpeed);
+        rightMotor.setSpeed(baseSpd);
+    } else if (correction < 0) {
+        leftMotor.setSpeed(baseSpd);
+        rightMotor.setSpeed(rightMotorSpeed);
+    }
 }
 
 void car::saveToMemory() {

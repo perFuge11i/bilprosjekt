@@ -46,14 +46,17 @@ private:
     point linePosition;
     vektor linePositionvector;
 
+    PID anglePID;
+
     void saveToMemory();
     void readSensors();
     void updateTime();
     void calculateTravel();
     void updatePosition();
+    void setMotorSpeed();
 
 public:
-    car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions);
+    car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues);
     void run();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();

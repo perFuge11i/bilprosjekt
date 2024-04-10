@@ -3,13 +3,16 @@
 
 const uint8_t baseSpeed = 60;
 
+kValues PIDparameters(1,1,1);
 
 motorPins leftMotorPins {3, 10};
 motorPins rightMotorPins {2, 9};
 
 carDimesions dimesions {12, 16, 0, 2, 29};
 
-car theCar(baseSpeed, leftMotorPins, rightMotorPins, dimesions);
+car theCar(baseSpeed, leftMotorPins, rightMotorPins, dimesions, kValues);
+
+
 
 void pulseLeft() {
     theCar.getLeftEncoder().updateCount();
