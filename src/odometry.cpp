@@ -88,24 +88,37 @@ void odometry::calculateInverse(const vektor &carPosition, const vektor &linePos
 
     int dir;
 
-    double r = dir*(carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
-
-    innerWheel = r - 8;
-    outerWheel = r + 8;
-
     if (venstrehoyre > 0) {
         dir = 1;
-        offsetL = 1;
-        offsetR = innerWheel/outerWheel;
     } else if (venstrehoyre < 0) {
         dir = -1;
-        offsetR = 1;
-        offsetL = innerWheel/outerWheel
     } else {
         offsetL = 1;
         offsetR = 1;
         return;
     }
+
+    double r = dir*(carPosition.x*carPosition.x+carPosition.y*carPosition.y+linePosition.x*linePosition.x+linePosition.y*linePosition.y-2*(carPosition.x*linePosition.x+carPosition.y*linePosition.y))/(2*(trajectory.y*(-linePosition.x+carPosition.x)+trajectory.x*(linePosition.y-carPosition.y)));
+
+
+    if (venstrehoyre > 0) {
+        offsetL = 1;
+        offsetR = (r - 8)/(r + 8);
+    } else if (venstrehoyre < 0) {
+        offsetR = 1;
+        offsetL = (r - 8)/(r + 8);
+    } else {
+        offsetL = 1;
+        offsetR = 1;
+        return;
+    }
+
+    Serial.print(offsetL);
+    Serial.print(" | ");
+    Serial.print(offsetR);
+    Serial.print(" | ");
+    Serial.println();
+
 
     //offsetL = 1 + dWheel/r;
     //offsetR = 1 - dWheel/r;
