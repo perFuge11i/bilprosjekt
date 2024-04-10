@@ -19,6 +19,7 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
     linePosition.x = 0;
     linePosition.y = 0;
     sensorOffset = 111;
+    angleToLine = 0;
 
     //TODO: bare test
     leftMotor.setSpeed(0);
@@ -29,21 +30,25 @@ void car::run() {
     readSensors();
     updateTime();
 
-    //sensorValSM.update(sensorState);
-
-    //leftMotor.setSpeed(sensorValSM.getLeftSpeed());
-    //rightMotor.setSpeed(sensorValSM.getRightSpeed());
-
     calculateTravel();
     odometryModel.calculate(leftTravel, rightTravel);
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
-    odometryModel.calculateInverse(carPositionVector, linePositionvector);
+    carToLine.x = linePosition.x-carPosition.x;
+    carToLine.y = linePosition.y-carPosition.y;
 
-    leftMotor.setSpeed(baseSpd * odometryModel.getLeftAdjustment());
-    rightMotor.setSpeed(baseSpd * odometryModel.getRightAdjustment());
+    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
 
+    //TODO: PID
+
+    if (adjustment >= 0) {
+        leftMotor.setSpeed(baseSpd - adjustment);
+        rightMotor.setSpeed(baseSpd);
+    } else if (adjustment < 0) {
+        leftMotor.setSpeed(baseSpd);
+        rightMotor.setSpeed(baseSpd + adjustment);
+    }
 
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);

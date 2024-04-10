@@ -34,6 +34,9 @@ private:
     double leftTravel;
     double rightTravel;
 
+    double angleToLine;
+    point carToLine;
+
     uint8_t baseSpd;
 
     point carPosition;

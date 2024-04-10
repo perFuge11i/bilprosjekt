@@ -78,6 +78,7 @@ void odometry::calculateLine(const double sensorOffset) {
     } else {
         lineDistance.setValues(sensorOffset,length);
         lineDistance.transform(basisX, basisY);
+
     }
 }
 
