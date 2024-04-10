@@ -98,12 +98,11 @@ void car::updateTime() {
 
 void car::setMotorSpeeds() {
     float targetAngle = 1;
-    float dt = ; //time since last update
 
-    float correction = pidController.regulate(dt, targetAngle, currentAngle);
+    float correction = anglePID.regulate(dt, targetAngle, angleToLine);
 
-    float leftMotorSpeed = baseSpeed - correction;
-    float rightMotorSpeed = baseSpeed + correction;
+    float leftMotorSpeed = baseSpd - correction;
+    float rightMotorSpeed = baseSpd + correction;
 
     leftMotorSpeed = constrain(leftMotorSpeed, 0, 255);
     rightMotorSpeed = constrain(rightMotorSpeed, 0, 255);

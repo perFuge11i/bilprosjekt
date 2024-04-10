@@ -53,7 +53,7 @@ private:
     void updateTime();
     void calculateTravel();
     void updatePosition();
-    void setMotorSpeed();
+    void setMotorSpeeds();
 
 public:
     car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues);
