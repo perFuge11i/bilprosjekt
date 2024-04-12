@@ -45,6 +45,7 @@ private:
     vektor carDirectionVector;
     point linePosition;
     vektor linePositionvector;
+    point carReferancePoint;
 
     PID anglePID;
 

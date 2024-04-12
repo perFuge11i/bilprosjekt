@@ -3,7 +3,7 @@
 
 const uint8_t baseSpeed = 120;
 
-PIDparameters kValues {3,0,3.1}; //3, 0, 3.1
+PIDparameters kValues {4,0,4}; //3, 0, 3.1
 
 motorPins leftMotorPins {3, 10};
 motorPins rightMotorPins {2, 9};

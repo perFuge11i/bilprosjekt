@@ -35,8 +35,8 @@ void car::run() {
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
-    carReferancePoint.x = carPosition.x + carDirection.x * dimesions.length/2;
-    carReferancePoint.y = carPosition.y + carDirection.y * dimesions.length/2;
+    carReferancePoint.x = carPosition.x + carDirection.x * 8;
+    carReferancePoint.y = carPosition.y + carDirection.y * 8;
 
     carToLine.x = linePosition.x-carReferancePoint.x;
     carToLine.y = linePosition.y-carReferancePoint.y;
@@ -44,6 +44,8 @@ void car::run() {
     angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
 
     setMotorSpeeds();
+
+
 
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
@@ -112,13 +114,22 @@ void car::setMotorSpeeds() {
     leftMotorSpeed = constrain(leftMotorSpeed, 0, baseSpd);
     rightMotorSpeed = constrain(rightMotorSpeed, 0, baseSpd);
 
+    /*
     if (correction < 0) {
         leftMotor.setSpeed(leftMotorSpeed);
         rightMotor.setSpeed(baseSpd);
     } else if (correction >= 0) {
         leftMotor.setSpeed(baseSpd);
         rightMotor.setSpeed(rightMotorSpeed);
-    }
+    } */
+
+    Serial.print(readings);
+    Serial.print(" | ");
+    Serial.print(angleToLine);
+    Serial.print(" | ");
+    Serial.print(correction);
+    Serial.print(" | ");
+    Serial.println();
 /*
     Serial.print(correction);
     Serial.print(" | ");
