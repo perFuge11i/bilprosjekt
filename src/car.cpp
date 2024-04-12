@@ -85,8 +85,10 @@ void car::readSensors() {
     if (readings == 111) {
         sensorOffset = readings;
     } else {
-        sensorOffset = readings/10;
+        double dbReadings = double(readings);
+        sensorOffset = dbReadings/10;
     }
+
 }
 
 
@@ -97,23 +99,33 @@ void car::updateTime() {
 }
 
 void car::setMotorSpeeds() {
-    float targetAngle = 1;
+    float targetAngle = 0;
 
     float correction = anglePID.regulate(dt, targetAngle, angleToLine);
 
-    float leftMotorSpeed = baseSpd - correction;
-    float rightMotorSpeed = baseSpd + correction;
+    float leftMotorSpeed = baseSpd + baseSpd*correction;
+    float rightMotorSpeed = baseSpd - baseSpd*correction;
 
-    leftMotorSpeed = constrain(leftMotorSpeed, 0, 255);
-    rightMotorSpeed = constrain(rightMotorSpeed, 0, 255);
+    leftMotorSpeed = constrain(leftMotorSpeed, 0, baseSpd);
+    rightMotorSpeed = constrain(rightMotorSpeed, 0, baseSpd);
 
-    if (correction >= 0) {
+    if (correction < 0) {
         leftMotor.setSpeed(leftMotorSpeed);
         rightMotor.setSpeed(baseSpd);
-    } else if (correction < 0) {
+    } else if (correction >= 0) {
         leftMotor.setSpeed(baseSpd);
         rightMotor.setSpeed(rightMotorSpeed);
     }
+/*
+    Serial.print(correction);
+    Serial.print(" | ");
+    Serial.print(rightMotorSpeed);
+    Serial.print(" | ");
+    Serial.print(leftMotorSpeed);
+    Serial.print(" | ");
+    Serial.print(angleToLine);
+    Serial.print(" | ");
+    Serial.println(); */
 }
 
 void car::saveToMemory() {

@@ -12,9 +12,9 @@ PID::PID(const float _kp, const float _ki, const float _kd, const float _windup)
 
 float PID::regulate(float dt, float target, float current) {
 
-    float error = target - current;
+    float error = target - current; //0.2
 
-    float P = error*kp;
+    float P = error * kp; // 0.2 * kp
     float I = lastIntegral + error*dt*ki;
 
     float D = 0;
