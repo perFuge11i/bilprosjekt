@@ -35,13 +35,29 @@ void car::run() {
     odometryModel.calculateLine(sensorOffset);
     updatePosition();
 
-    carReferancePoint.x = carPosition.x + carDirection.x * dimesions.length/2;
-    carReferancePoint.y = carPosition.y + carDirection.y * dimesions.length/2;
+    if (sensorOffset == 111) {
+        lineLost = true;
 
-    carToLine.x = linePosition.x-carReferancePoint.x;
-    carToLine.y = linePosition.y-carReferancePoint.y;
+    } else {
 
-    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
+        carReferancePoint.x = carPosition.x + carDirection.x * dimesions.length/2;
+        carReferancePoint.y = carPosition.y + carDirection.y * dimesions.length/2;
+
+
+        carToLine.x = linePosition.x-carReferancePoint.x;
+        carToLine.y = linePosition.y-carReferancePoint.y;
+
+        angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
+
+        if (angleToLine >= 0) {
+            lastAngleDir = 1;
+        } else {
+            lastAngleDir = -1;
+        }
+
+    if (lineLost) {
+        angleToline =  (fabs(atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y))))) * lastAngleDir;
+    }
 
     setMotorSpeeds();
 

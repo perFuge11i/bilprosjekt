@@ -27,6 +27,8 @@ private:
     double lastTime;
     double dt;
     double currentTime;
+    bool lineLost;
+    double lastAngleDir
 
     double travelPrPulse;
     long lastLeftPulseCount;
