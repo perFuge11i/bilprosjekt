@@ -74,7 +74,7 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
 
 void odometry::calculateLine(const double sensorOffset) {
     if (sensorOffset == 111) {
-        lineDistance.setValues(111,111);
+         lineDistance.setValues(111,111);
     } else {
         lineDistance.setValues(sensorOffset,length);
         lineDistance.transform(basisX, basisY);
