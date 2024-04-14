@@ -24,9 +24,11 @@ private:
     int8_t readings;
     double sensorOffset;
 
-    double lastTime;
-    double dt;
-    double currentTime;
+    unsigned long lastTime;
+    uint16_t dt;
+    unsigned long currentTime;
+    uint16_t timer;
+
 
     double travelPrPulse;
     long lastLeftPulseCount;
@@ -46,6 +48,11 @@ private:
     point linePosition;
     vektor linePositionvector;
     point carReferancePoint;
+
+    bool midLine;
+    bool lineLost;
+    double lastAngleDir;
+    unsigned long startTime;
 
     PID anglePID;
 
