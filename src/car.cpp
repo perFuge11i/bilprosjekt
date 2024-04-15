@@ -21,6 +21,11 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
     linePosition.y = 0;
     sensorOffset = 111;
     angleToLine = 0;
+    lineDir.x = 0;
+    lineDir.y = 1;
+    carDirection.x = 0;
+    carDirection.y = 0;
+
 
     //TODO: bare test
     leftMotor.setSpeed(0);
@@ -70,13 +75,43 @@ void car::run() {
         }
     }
 
+    lineRegression();
+    Serial.print(linePositions[0][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[0][1]);
+    Serial.print(" , ");
+    Serial.print(linePositions[1][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[1][1]);
+    Serial.print(" , ");
+    Serial.print(linePositions[2][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[2][1]);
+    Serial.print(" , ");
+    Serial.print(linePositions[3][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[3][1]);
+    Serial.print(" , ");
+    Serial.print(linePositions[4][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[4][1]);
+    Serial.print(" , ");
+    Serial.print(linePositions[5][0]);
+    Serial.print(" ");
+    Serial.print(linePositions[5][1]);
+    Serial.print(" , ");
+    Serial.print(lineDir.x);
+    Serial.print(" ");
+    Serial.print(lineDir.y);
+    Serial.println();
 
-    setMotorSpeeds();
+    //setMotorSpeeds();
 
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
     dataPrinter.setLinePosition(linePosition);
+    dataPrinter.setLineDirection(lineDir);
 
     //dataPrinter.print();
 }
@@ -93,15 +128,27 @@ void car::updatePosition() {
         linePosition.y = linePositionvector.y;
     }
 
-    updateLinePositions(linePositionvector);
+    updateLinePositions(linePosition);
 
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
     carDirection.y = carDirectionVector.y;
 }
 
-void updateLinePositions(point newPosition) {
-    
+void car::updateLinePositions(point newPosition) {
+    if (currentIndex >= line_pos_size-1) {
+        isFull = true;
+        for (int8_t i = 0; i < line_pos_size; i++) {
+            linePositions[i][0] = linePositions[i + 1][0];
+            linePositions[i][1] = linePositions[i + 1][1];
+        }
+        linePositions[line_pos_size-1][0] = newPosition.x;
+        linePositions[line_pos_size-1][1] = newPosition.y;
+    } else {
+        linePositions[currentIndex][0] = newPosition.x;
+        linePositions[currentIndex][1] = newPosition.y;
+        currentIndex++;
+    }
 }
 
 void car::calculateTravel() {
@@ -129,11 +176,41 @@ void car::readSensors() {
         sensorOffset = readings;
     } else {
         double dbReadings = double(readings);
-        sensorOffset = dbReadings/10;
+        sensorOffset = dbReadings/100;
     }
 
 }
 
+void car::lineRegression() {
+    if (!isFull) {
+        return;
+    }
+
+    double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+
+    for (int8_t i = 0; i < line_pos_size; i++) {
+        sumX += linePositions[i][0];
+        sumY += linePositions[i][1];
+        sumXY += linePositions[i][0] * linePositions[i][1];
+        sumXX += linePositions[i][0] * linePositions[i][0];
+    }
+
+    double meanX = sumX / line_pos_size;
+    double meanY = sumY / line_pos_size;
+    double numerator = 0;
+    double denominator = 0;
+    for (int8_t i = 0; i < line_pos_size; i++) {
+        numerator += (linePositions[i][0] - meanX)*(linePositions[i][1] - meanY);
+        denominator += (linePositions[i][0] - meanX)*(linePositions[i][0] - meanX));
+
+    }
+    slope = numerator/denominator;
+    intercept = meanY - slope*meanX;
+
+
+    lineDir.x = 1/(sqrt(1+slope*slope));
+    lineDir.y = slope/(sqrt(1+slope*slope));
+}
 
 void car::updateTime() {
     currentTime = millis();

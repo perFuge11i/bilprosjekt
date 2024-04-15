@@ -1,18 +1,23 @@
 #include "printer.hpp"
 
 void printer::setCarPosition(point &carPosition) {
-    doc["carX"] = carPosition.x;
-    doc["carY"] = carPosition.y;
+    doc["carX"] = round(carPosition.x*100.0)/100.0;
+    doc["carY"] = round(carPosition.y*100.0)/100.0;
 }
 
 void printer::setCarDirection(point &carDirection) {
-    doc["dirX"] = carDirection.x;
-    doc["dirY"] = carDirection.y;
+    doc["carDirX"] = round(carDirection.x*100.0)/100.0;
+    doc["carDirY"] = round(carDirection.y*100.0)/100.0;
 }
 
 void printer::setLinePosition(point &linePosition) {
-    doc["lineX"] = linePosition.x;
-    doc["lineY"] = linePosition.y;
+    doc["lineX"] = round(linePosition.x*100.0)/100.0;
+    doc["lineY"] = round(linePosition.y*100.0)/100.0;
+}
+
+void printer::setLineDirection(point &lineDirection) {
+    doc["lineDirX"] = round(lineDirection.x*100.0)/100.0;
+    doc["lineDirY"] = round(lineDirection.y*100.0)/100.0;
 }
 
 void printer::print() {

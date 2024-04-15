@@ -11,6 +11,7 @@ public:
     void setCarPosition(point& carPosition);
     void setCarDirection(point& carDirection);
     void setLinePosition(point& linePosition);
+    void setLineDirection(point& lineDirection);
     void print();
 };
 #endif //BILPROSJEKT_PRINTER_HPP

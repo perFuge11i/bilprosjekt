@@ -49,11 +49,14 @@ private:
     point linePosition;
     vektor linePositionvector;
     point carReferancePoint;
+    point lineDir;
 
-    static const int line_pos_size = 4;
-    double linePositions[line_pos_size][2];
+    static const int line_pos_size = 6;
+    double linePositions[line_pos_size][2] = {{0,0},{0,0},{0,0},{0,0}};
     int currentIndex = 0;
     bool isFull = false;
+    double slope;
+    double intercept;
 
     bool midLine;
     bool lineLost;
@@ -68,7 +71,8 @@ private:
     void calculateTravel();
     void updatePosition();
     void setMotorSpeeds();
-    void updateLinePositions(vektor newPosition);
+    void updateLinePositions(point newPosition);
+    void lineRegression();
 
 public:
     car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues);
