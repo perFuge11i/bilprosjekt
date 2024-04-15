@@ -37,27 +37,37 @@ void car::run() {
 
     if (sensorOffset == 111) {
         lineLost = true;
-
     } else {
-
-        carReferancePoint.x = carPosition.x + carDirection.x * dimesions.length/2;
-        carReferancePoint.y = carPosition.y + carDirection.y * dimesions.length/2;
-
+        lineLost = false;
+        carReferancePoint.x = carPosition.x + carDirection.x * 8;
+        carReferancePoint.y = carPosition.y + carDirection.y * 8;
 
         carToLine.x = linePosition.x-carReferancePoint.x;
         carToLine.y = linePosition.y-carReferancePoint.y;
 
-        angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
+    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
 
         if (angleToLine >= 0) {
             lastAngleDir = 1;
         } else {
             lastAngleDir = -1;
         }
+    }
 
     if (lineLost) {
-        angleToline =  (fabs(atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y))))) * lastAngleDir;
+        if (lastAngleDir == 1) {
+            angleToLine = (atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y));
+            if (angleToLine < 0) {
+                angleToLine = (2*M_PI + atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y));
+            }
+        } else if (lastAngleDir == -1) {
+            angleToLine = (2*M_PI + atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y));
+            if (angleToLine > 0) {
+                angleToLine = (-2*M_PI + atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y));
+            }
+        }
     }
+
 
     setMotorSpeeds();
 
@@ -81,9 +91,22 @@ void car::updatePosition() {
         linePosition.y = linePositionvector.y;
     }
 
+    updateLinePositions(linePositionvector);
+
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
     carDirection.y = carDirectionVector.y;
+}
+
+void updateLinePositions(vektor newPosition) {
+
+    if (linePositions.size() < 4) {
+        linePositions.push_back(newPosition);
+    } else {
+        linePositions[currentIndex] = newPosition;
+        isFull = true;
+    }
+    currentIndex = (currentIndex + 1) % 4;
 }
 
 void car::calculateTravel() {
@@ -98,10 +121,16 @@ void car::calculateTravel() {
 }
 
 void car::readSensors() {
+
     if (Serial.available() > 0) {
         readings = Serial.read();
     }
+
     if (readings == 111) {
+        sensorOffset = readings;
+    } else if (readings == 40) {
+        sensorOffset = readings;
+    } else if (readings == -40) {
         sensorOffset = readings;
     } else {
         double dbReadings = double(readings);
@@ -118,33 +147,49 @@ void car::updateTime() {
 }
 
 void car::setMotorSpeeds() {
+    if (currentTime < startTime + timer) {
+        return;
+    }
+
     float targetAngle = 0;
 
-    float correction = anglePID.regulate(dt, targetAngle, angleToLine);
 
-    float leftMotorSpeed = baseSpd + baseSpd*correction;
-    float rightMotorSpeed = baseSpd - baseSpd*correction;
+    if (sensorOffset == 40) {
 
-    leftMotorSpeed = constrain(leftMotorSpeed, 0, baseSpd);
-    rightMotorSpeed = constrain(rightMotorSpeed, 0, baseSpd);
-
-    if (correction < 0) {
-        leftMotor.setSpeed(leftMotorSpeed);
-        rightMotor.setSpeed(baseSpd);
-    } else if (correction >= 0) {
         leftMotor.setSpeed(baseSpd);
-        rightMotor.setSpeed(rightMotorSpeed);
+        rightMotor.setSpeed(0);
+        startTime = currentTime;
+        timer = 500;
+
+
+
+    } else if (sensorOffset == -40) {
+
+        rightMotor.setSpeed(baseSpd);
+        leftMotor.setSpeed(0);
+        startTime = currentTime;
+        timer = 500;
+
+
+    } else {
+
+        float correction = anglePID.regulate(dt, targetAngle, angleToLine);
+
+        float leftMotorSpeed = baseSpd + baseSpd*correction;
+        float rightMotorSpeed = baseSpd - baseSpd*correction;
+
+        leftMotorSpeed = constrain(leftMotorSpeed, 0, baseSpd);
+        rightMotorSpeed = constrain(rightMotorSpeed, 0, baseSpd);
+
+
+        if (correction < 0) {
+            leftMotor.setSpeed(leftMotorSpeed);
+            rightMotor.setSpeed(baseSpd);
+        } else if (correction >= 0) {
+            leftMotor.setSpeed(baseSpd);
+            rightMotor.setSpeed(rightMotorSpeed);
+        }
     }
-/*
-    Serial.print(correction);
-    Serial.print(" | ");
-    Serial.print(rightMotorSpeed);
-    Serial.print(" | ");
-    Serial.print(leftMotorSpeed);
-    Serial.print(" | ");
-    Serial.print(angleToLine);
-    Serial.print(" | ");
-    Serial.println(); */
 }
 
 void car::saveToMemory() {

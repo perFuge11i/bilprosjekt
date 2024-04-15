@@ -16,3 +16,5 @@ double motor::getPulses() const {
 encoder& motor::getEncoder() {
     return motorEncoder;
 }
+
+

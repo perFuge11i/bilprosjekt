@@ -82,6 +82,28 @@ void odometry::calculateLine(const double sensorOffset) {
     }
 }
 
+void odemetry::lineRegression(const vektor &linePosition) {
+
+    if (linePositions.size() < 4 && !isFull) return;
+
+    double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    int n = linePositions.size();
+
+    for (const auto& point : points) {
+        sumX += point.x;
+        sumY += point.y;
+        sumXY += point.x * point.y;
+        sumXX += point.x * point.x;
+    }
+
+    double meanX = sumX / n;
+    double meanY = sumY / n;
+    slope = (sumXY - n * meanX * meanY) / (sumXX - n * meanX * meanX);
+    double angle = atan(slope);
+
+    vektor lineDir(cos(angle), sin(angle));
+}
+
 void odometry::calculateInverse(const vektor &carPosition, const vektor &linePosition) {
     vektor carLine(linePosition.x-carPosition.x, linePosition.y-carPosition.y);
 

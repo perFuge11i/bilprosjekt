@@ -1,9 +1,9 @@
 #include "car.hpp"
 #include "structures.hpp"
 
-const uint8_t baseSpeed = 120;
+const uint8_t baseSpeed = 60;
 
-PIDparameters kValues {3,0,3.1}; //3, 0, 3.1
+PIDparameters kValues {3,0,0}; //3, 0, 3.1
 
 motorPins leftMotorPins {3, 10};
 motorPins rightMotorPins {2, 9};
