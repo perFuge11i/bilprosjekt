@@ -82,7 +82,7 @@ void odometry::calculateLine(const double sensorOffset) {
     }
 }
 
-void odemetry::lineRegression(const vektor &linePosition) {
+void odometry::lineRegression(const vektor &linePosition) {
 
     if (linePositions.size() < 4 && !isFull) return;
 

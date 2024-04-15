@@ -6,7 +6,8 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
           sensorValSM(baseSpeed),
           odometryModel(dimesions.width, dimesions.length),
           carPositionVector(0, 0), carDirectionVector(0, 0),
-          linePositionvector(0,0), anglePID(kValues.kP, kValues.kI, kValues.kD){
+          linePositionvector(0,0), anglePID(kValues.kP, kValues.kI, kValues.kD),
+          currentIndex(0) {
     lastTime = millis();
 
     lastLeftPulseCount = leftMotor.getPulses();
@@ -24,6 +25,7 @@ car::car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins,
     //TODO: bare test
     leftMotor.setSpeed(0);
     rightMotor.setSpeed(0);
+
 }
 
 void car::run() {
@@ -98,15 +100,8 @@ void car::updatePosition() {
     carDirection.y = carDirectionVector.y;
 }
 
-void updateLinePositions(vektor newPosition) {
-
-    if (linePositions.size() < 4) {
-        linePositions.push_back(newPosition);
-    } else {
-        linePositions[currentIndex] = newPosition;
-        isFull = true;
-    }
-    currentIndex = (currentIndex + 1) % 4;
+void updateLinePositions(point newPosition) {
+    
 }
 
 void car::calculateTravel() {

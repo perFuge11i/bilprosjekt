@@ -30,6 +30,7 @@ private:
     uint16_t timer;
 
 
+
     double travelPrPulse;
     long lastLeftPulseCount;
     long lastRightPulseCount;
@@ -49,6 +50,11 @@ private:
     vektor linePositionvector;
     point carReferancePoint;
 
+    static const int line_pos_size = 4;
+    double linePositions[line_pos_size][2];
+    int currentIndex = 0;
+    bool isFull = false;
+
     bool midLine;
     bool lineLost;
     double lastAngleDir;
@@ -62,6 +68,7 @@ private:
     void calculateTravel();
     void updatePosition();
     void setMotorSpeeds();
+    void updateLinePositions(vektor newPosition);
 
 public:
     car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues);
