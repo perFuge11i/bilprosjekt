@@ -36,6 +36,7 @@ public:
     odometry(const double& carWidth, const double& carLength);
     void calculate(const double& leftWheelTravel, const double& rightWheelTravel);
     void calculateLine(const double sensorOffset);
+    void lineRegression();
     void calculateInverse(const vektor& carPosition, const vektor& linePosition);
     vektor& getDistanceTravelled();
     vektor& getTrajectory();

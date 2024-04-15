@@ -45,7 +45,7 @@ void car::run() {
         carToLine.x = linePosition.x-carReferancePoint.x;
         carToLine.y = linePosition.y-carReferancePoint.y;
 
-        angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
+    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
 
         if (angleToLine >= 0) {
             lastAngleDir = 1;
@@ -71,8 +71,6 @@ void car::run() {
 
     setMotorSpeeds();
 
-
-
     //saveToMemory(); TODO: fix vector
     dataPrinter.setCarPosition(carPosition);
     dataPrinter.setCarDirection(carDirection);
@@ -93,9 +91,22 @@ void car::updatePosition() {
         linePosition.y = linePositionvector.y;
     }
 
+    updateLinePositions(linePositionvector);
+
     carDirectionVector = odometryModel.getTrajectory();
     carDirection.x = carDirectionVector.x;
     carDirection.y = carDirectionVector.y;
+}
+
+void updateLinePositions(vektor newPosition) {
+
+    if (linePositions.size() < 4) {
+        linePositions.push_back(newPosition);
+    } else {
+        linePositions[currentIndex] = newPosition;
+        isFull = true;
+    }
+    currentIndex = (currentIndex + 1) % 4;
 }
 
 void car::calculateTravel() {
