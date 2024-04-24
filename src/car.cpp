@@ -105,6 +105,7 @@ void car::readSensors() {
             double dbReadings = double(readings);
             sensorOffset = -dbReadings/10;
         }
+        lastReading = readings;
     }
 }
 
@@ -112,12 +113,12 @@ void car::readSensors() {
 void car::setMotorSpeeds() {
     if (currentTime < startTime + timer) {
         return;
-    } if (readings == -37) {
+    } if (readings == -37 && ingore = false) {
         leftMotor.setSpeed(baseSpd);
         rightMotor.setSpeed(-baseSpd);
         startTime = double(micros())/1000;
         timer = 200;
-    } else if (readings == 37) {
+    } else if (readings == 37 && ingore = false) {
         rightMotor.setSpeed(baseSpd);
         leftMotor.setSpeed(-baseSpd);
         startTime = double(micros())/1000;
@@ -165,6 +166,37 @@ void car::calculateAngle() {
         } else {
             lastAngleDir = -1;
         }
+    }
+}
+
+void car::counter() {
+    if (abs(readings) == 37 && abs(lastReading) != 37) {
+        if (counts == 0) {
+            counts++;
+            ignore = false;
+        } else if (counts == 1) {
+            counts++;
+            ignore = true;
+        } else if (counts == 2) {
+            counts++;
+            ignore = true;
+        } else if (counts == 3) {
+            counts++;
+            ignore = false;
+        } else if (counts == 4) {
+            counts++;
+            ignore = true;
+        } else if (counts == 5) {
+            counts++;
+            ignore = true;
+        } else if (counts == 6) {
+            counts++;
+            ignore = false;
+        } else if (counts == 7) {
+            ignore = false;
+            counts = 0
+        }
+
     }
 }
 

@@ -27,6 +27,7 @@ private:
     double currentTime;
     uint16_t timer;
     bool started;
+    bool ignore;
     uint8_t printTimer;
 
     unsigned long lTime;
@@ -63,6 +64,8 @@ private:
     static const int line_pos_size = 6;
     double linePositions[line_pos_size][2] = {{0,0},{0,0},{0,0},{0,0}};
     int currentIndex = 0;
+    int counts = 0;
+    lastReading = 0;
     bool isFull = false;
     double slope;
 
@@ -90,6 +93,7 @@ public:
     car(double baseSpeed, range& speedRange, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimensions, PIDparameters& kValues);
     void run();
     void speedTest();
+    void counter();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();
     void travel1Left();
