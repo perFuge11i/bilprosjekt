@@ -73,7 +73,6 @@ void car::run() {
 
     setMotorSpeeds();
 
-
     /*
     if (currentTime >= lTime + printTimer) {
         dataPrinter.setCarPosition(carPosition);
@@ -91,6 +90,7 @@ void car::run() {
         }
         lTime = currentTime;
     }*/
+
 
 }
 
@@ -114,14 +114,14 @@ void car::setMotorSpeeds() {
         return;
     } if (readings == -37) {
         leftMotor.setSpeed(baseSpd);
-        rightMotor.setSpeed(0);
-        startTime = currentTime;
-        timer = 500;
+        rightMotor.setSpeed(-baseSpd);
+        startTime = double(micros())/1000;
+        timer = 200;
     } else if (readings == 37) {
         rightMotor.setSpeed(baseSpd);
-        leftMotor.setSpeed(0);
-        startTime = currentTime;
-        timer = 500;
+        leftMotor.setSpeed(-baseSpd);
+        startTime = double(micros())/1000;
+        timer = 200;
     } else {
         double correction = anglePID.regulate(dt, 0, angleToLine);
 

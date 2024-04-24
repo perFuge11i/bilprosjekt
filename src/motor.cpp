@@ -24,8 +24,22 @@ void motor::frwrd() {
     digitalWrite(dirPin2, HIGH);
 }
 
+void motor::bckwrd() {
+    digitalWrite(dirPin1, HIGH);
+    digitalWrite(dirPin2, LOW);
+}
+
 void motor::setSpeed(double speed) {
+
     speedSignal = int((speed*(maxSpd-minSpd)+minSpd));
+
+    if (speed < 0) {
+        bckwrd();
+        speedSignal = abs(speedSignal);
+    } else {
+        frwrd();
+    }
+
     if (speedSignal <= 21) {
         speedSignal = 0;
     }

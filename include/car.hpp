@@ -45,8 +45,8 @@ private:
     point carToLine;
 
     double baseSpd;
-    uint8_t minSpd;
-    uint8_t maxSpd;
+    int8_t minSpd;
+    int8_t maxSpd;
 
     double leftMotorSpeed;
     double rightMotorSpeed;

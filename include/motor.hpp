@@ -21,6 +21,7 @@ public:
     double getPulses() const;
     encoder &getEncoder();
     void frwrd();
+    void bckwrd();
     void stop();
 };
 
