@@ -8,13 +8,20 @@
 class motor {
 private:
     encoder motorEncoder;
-    volatile long pulseCount;
     uint8_t PMWpin;
+    uint8_t speedSignal;
+    uint8_t minSpd;
+    uint8_t maxSpd;
+    uint8_t dirPin1;
+    uint8_t dirPin2;
+
 public:
-    motor(motorPins& pins);
-    void setSpeed(uint8_t speed);
+    motor(motorPins& pins, range& speedRange);
+    void setSpeed(double speed);
     double getPulses() const;
     encoder &getEncoder();
+    void frwrd();
+    void stop();
 };
 
 #endif //BILPROSJEKT_MOTOR_HPP

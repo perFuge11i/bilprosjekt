@@ -4,16 +4,23 @@
 
 class PID {
 public:
-    float kp;
-    float ki;
-    float kd;
-    float windup;
+    double P;
+    double I;
+    double D;
 
-    float lastIntegral;
-    float lastError;
+    double kp;
+    double ki;
+    double kd;
+    double windup;
 
-    PID(const float _kp, const float _ki, const float _kd, const float _windup = 0);
-    float regulate(float dt, float target, float current);
+    double lastIntegral;
+    double lastError;
+    bool integrate;
+
+
+    PID(const double _kp, const double _ki, const double _kd, const double _windup);
+    double regulate(double dt, double target, double current);
+    void activateI();
 
 };
 #endif //BILPROSJEKT_PID_HPP

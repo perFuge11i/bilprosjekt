@@ -15,6 +15,13 @@ double vektor::dotProduct(vektor vektor2) const {
     return dotProduct;
 }
 
+vektor vektor::rotate(const double angle) {
+    double xPrime = x*cos(angle) - y*sin(angle);
+    double yPrime = x*sin(angle) + y*cos(angle);
+    vektor rotatedVector(xPrime, yPrime);
+    return rotatedVector;
+}
+
 void vektor::scale(const double scalar) {
     x *= scalar;
     y *= scalar;

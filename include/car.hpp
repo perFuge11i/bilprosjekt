@@ -16,31 +16,40 @@ class car {
 private:
     motor leftMotor;
     motor rightMotor;
-    //trackMemory memory; TODO: fix vector
-    stateMachine sensorValSM;
     odometry odometryModel;
     printer dataPrinter;
 
     int8_t readings;
     double sensorOffset;
 
-    unsigned long lastTime;
-    uint16_t dt;
-    unsigned long currentTime;
+    double lastTime;
+    double dt;
+    double currentTime;
     uint16_t timer;
+    bool started;
+    uint8_t printTimer;
 
-
+    unsigned long lTime;
+    double lastPulsesLeft;
+    double lastPulsesRight;
 
     double travelPrPulse;
-    long lastLeftPulseCount;
-    long lastRightPulseCount;
+    double lastLeftPulseCount;
+    double lastRightPulseCount;
     double leftTravel;
     double rightTravel;
+    uint8_t lCnt;
+    uint8_t rCnt;
 
     double angleToLine;
     point carToLine;
 
-    uint8_t baseSpd;
+    double baseSpd;
+    uint8_t minSpd;
+    uint8_t maxSpd;
+
+    double leftMotorSpeed;
+    double rightMotorSpeed;
 
     point carPosition;
     vektor carPositionVector;
@@ -56,30 +65,38 @@ private:
     int currentIndex = 0;
     bool isFull = false;
     double slope;
-    double intercept;
 
-    bool midLine;
     bool lineLost;
     double lastAngleDir;
-    unsigned long startTime;
+    double startTime;
+    double PIDtimer;
+    bool integrating;
+    double directionAngle;
+
+    bool stop = false;
 
     PID anglePID;
 
-    void saveToMemory();
     void readSensors();
     void updateTime();
     void calculateTravel();
     void updatePosition();
     void setMotorSpeeds();
+    void calculateAngle();
     void updateLinePositions(point newPosition);
     void lineRegression();
 
 public:
-    car(uint8_t baseSpeed, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimesions, PIDparameters& kValues);
+    car(double baseSpeed, range& speedRange, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimensions, PIDparameters& kValues);
     void run();
+    void speedTest();
     encoder &getLeftEncoder();
     encoder &getRightEncoder();
-    void resetMemory();
+    void travel1Left();
+    void travel1Right();
+    bool stopp();
 };
 
 #endif //BILPROSJEKT_CAR_HPP
+
+// pio device monitor --port /dev/cu.usbserial-10 --baud 9600

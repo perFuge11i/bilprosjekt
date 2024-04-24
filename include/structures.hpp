@@ -6,9 +6,13 @@
 struct carDimesions {
     double length;//Midt mellom hjulene til midten av sensorarray
     double width;//Mellom innsiden av hjulene
-    double arrrayWidth;//Mellom ytterste sensorer
     double wheelDiameter;//Diamter...
     double pulsesInRotation;//Finnutda
+};
+
+struct range {
+    uint8_t min;
+    uint8_t max;
 };
 
 struct point {
@@ -21,11 +25,14 @@ struct PIDparameters {
     double kP;
     double kI;
     double kD;
+    double windup;
 };
 
 struct motorPins {
     uint8_t encoderPin;
     uint8_t PMWpin;
+    uint8_t dirPin1;
+    uint8_t dirPin2;
 };
 
 #endif //BILPROSJEKT_STRUCTURES_HPP

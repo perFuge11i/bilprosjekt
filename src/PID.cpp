@@ -1,39 +1,51 @@
 
 #include "PID.hpp"
 
-PID::PID(const float _kp, const float _ki, const float _kd, const float _windup) {
+PID::PID(const double _kp, const double _ki, const double _kd, const double _windup) {
     kp = _kp;
     ki = _ki;
     kd = _kd;
     windup = _windup;
     lastIntegral = 0;
     lastError = 0;
+    integrate = false;
+    I = 0;
 }
 
-float PID::regulate(float dt, float target, float current) {
+double PID::regulate(double dt, double target, double current) {
 
-    float error = target - current; //0.2
+    double error = target - current; //0.2
 
-    float P = error * kp; // 0.2 * kp
-    float I = lastIntegral + error*dt*ki;
+    P = error * kp; // 0.2 * kp
 
-    float D = 0;
+    D = 0;
     if (dt > 0) {
         D = (error-lastError)/dt * kd;
     }
 
-    if (windup != 0) {
-        if (I > windup) {
-            I = windup;
+    if (integrate) {
+        I = lastIntegral + error * dt * ki;
+        if (windup != 0) {
+            if (I > windup) {
+                I = windup;
+            }
+            if (I < -windup) {
+                I = -windup;
+            }
         }
-
-        if (I < -windup) {
-            I = -windup;
+        if ((I > 0 && error < 0) || (I < 0 && error > 0)) {
+            I = 0;
         }
     }
 
-    lastIntegral = I;
     lastError = error;
+    lastIntegral = I;
+
+
 
     return P + I + D;
+}
+
+void PID::activateI() {
+    integrate = true;
 }
