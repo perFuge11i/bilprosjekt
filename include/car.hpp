@@ -65,9 +65,11 @@ private:
     double linePositions[line_pos_size][2] = {{0,0},{0,0},{0,0},{0,0}};
     int currentIndex = 0;
     int counts = 0;
-    lastReading = 0;
+    int8_t lastReading = 0;
     bool isFull = false;
     double slope;
+    int cntTimer;
+    double cntStartTime;
 
     bool lineLost;
     double lastAngleDir;

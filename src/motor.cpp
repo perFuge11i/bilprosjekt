@@ -31,11 +31,10 @@ void motor::bckwrd() {
 
 void motor::setSpeed(double speed) {
 
-    speedSignal = int((speed*(maxSpd-minSpd)+minSpd));
+    speedSignal = int((abs(speed)*(maxSpd-minSpd)+minSpd));
 
     if (speed < 0) {
         bckwrd();
-        speedSignal = abs(speedSignal);
     } else {
         frwrd();
     }

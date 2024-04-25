@@ -29,16 +29,20 @@ car::car(double baseSpeed, range& speedRange, motorPins& leftMotorPins, motorPin
 
     timer = 1000;
     started = false;
-    startTime = millis();
+    startTime = double(micros())/1000;
     lTime = millis();
     lastPulsesLeft = 0;
     lastPulsesRight = 0;
     printTimer = 20;
     PIDtimer =100;
+    cntTimer = 0;
+    cntStartTime = double(micros())/1000;
     stop = false;
     lCnt = 0;
     rCnt = 0;
     integrating = false;
+    ignore = false;
+    counts = 0;
 }
 
 bool car::stopp() {
@@ -72,7 +76,6 @@ void car::run() {
     }
 
     setMotorSpeeds();
-
     /*
     if (currentTime >= lTime + printTimer) {
         dataPrinter.setCarPosition(carPosition);
@@ -95,6 +98,7 @@ void car::run() {
 }
 
 void car::readSensors() {
+    lastReading = readings;
     if (Serial.available() > 0) {
         while (Serial.available() > 0) {
             readings = Serial.read();
@@ -105,37 +109,35 @@ void car::readSensors() {
             double dbReadings = double(readings);
             sensorOffset = -dbReadings/10;
         }
-        lastReading = readings;
+
     }
 }
 
 
 void car::setMotorSpeeds() {
-    if (currentTime < startTime + timer) {
-        return;
-    } if (readings == -37 && ingore = false) {
+     if (readings == -37) {
         leftMotor.setSpeed(baseSpd);
         rightMotor.setSpeed(-baseSpd);
         startTime = double(micros())/1000;
-        timer = 200;
-    } else if (readings == 37 && ingore = false) {
+    } else if (readings == 37) {
         rightMotor.setSpeed(baseSpd);
         leftMotor.setSpeed(-baseSpd);
         startTime = double(micros())/1000;
-        timer = 200;
     } else {
-        double correction = anglePID.regulate(dt, 0, angleToLine);
+        if (abs(readings) != 37) {
+            double correction = anglePID.regulate(dt, 0, angleToLine);
 
-        if (correction < 0) {
-            leftMotorSpeed = constrain(baseSpd + correction, 0, 1);
-            rightMotorSpeed = baseSpd;
-        } else {
-            leftMotorSpeed = baseSpd;
-            rightMotorSpeed = constrain(baseSpd - correction, 0, 1);
+            if (correction < 0) {
+                leftMotorSpeed = constrain(baseSpd + correction, -0.2, 1);
+                rightMotorSpeed = baseSpd;
+            } else {
+                leftMotorSpeed = baseSpd;
+                rightMotorSpeed = constrain(baseSpd - correction, -0.2, 1);
+            }
+
+            leftMotor.setSpeed(leftMotorSpeed);
+            rightMotor.setSpeed(rightMotorSpeed);
         }
-
-        leftMotor.setSpeed(leftMotorSpeed);
-        rightMotor.setSpeed(rightMotorSpeed);
     }
 }
 
@@ -169,36 +171,41 @@ void car::calculateAngle() {
     }
 }
 
-void car::counter() {
+/*void car::counter() {
     if (abs(readings) == 37 && abs(lastReading) != 37) {
-        if (counts == 0) {
-            counts++;
-            ignore = false;
-        } else if (counts == 1) {
-            counts++;
-            ignore = true;
-        } else if (counts == 2) {
-            counts++;
-            ignore = true;
-        } else if (counts == 3) {
-            counts++;
-            ignore = false;
-        } else if (counts == 4) {
-            counts++;
-            ignore = true;
-        } else if (counts == 5) {
-            counts++;
-            ignore = true;
-        } else if (counts == 6) {
-            counts++;
-            ignore = false;
-        } else if (counts == 7) {
-            ignore = false;
-            counts = 0
-        }
+        if (currentTime > cntStartTime + cntTimer) {
+            cntTimer = 300;
+            cntStartTime = double(micros())/1000;
 
+            Serial.print("dffdddf");
+            if (counts == 0) {
+                counts++;
+                ignore = false;
+            } else if (counts == 1) {
+                counts++;
+                ignore = true;
+            } else if (counts == 2) {
+                counts++;
+                ignore = true;
+            } else if (counts == 3) {
+                counts++;
+                ignore = false;
+            } else if (counts == 4) {
+                counts++;
+                ignore = true;
+            } else if (counts == 5) {
+                counts++;
+                ignore = true;
+            } else if (counts == 6) {
+                counts++;
+                ignore = false;
+            } else if (counts == 7) {
+                ignore = false;
+                counts = 0;
+            }
+        }
     }
-}
+} */
 
 encoder& car::getLeftEncoder() {
     return leftMotor.getEncoder();

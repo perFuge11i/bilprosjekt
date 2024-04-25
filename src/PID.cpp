@@ -14,9 +14,9 @@ PID::PID(const double _kp, const double _ki, const double _kd, const double _win
 
 double PID::regulate(double dt, double target, double current) {
 
-    double error = target - current; //0.2
+    double error = target - current;
 
-    P = error * kp; // 0.2 * kp
+    P = error * kp;
 
     D = 0;
     if (dt > 0) {

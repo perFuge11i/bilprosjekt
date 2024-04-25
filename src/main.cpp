@@ -5,7 +5,7 @@ const double baseSpeed = 1;
 
 range speedRange {20, 120};
 
-PIDparameters kValues {1.7,0,0.5,0};
+PIDparameters kValues {0.97,0,18.7,0};
 
 motorPins leftMotorPins {3, 6, 8, 7};
 motorPins rightMotorPins {2, 9, 10, 11};
