@@ -18,40 +18,55 @@ private:
     motor rightMotor;
     odometry odometryModel;
     printer dataPrinter;
-
-    int8_t readings;
-    double sensorOffset;
+    PID anglePID;
 
     double lastTime;
     double dt;
     double currentTime;
-    uint16_t timer;
     bool started;
-    bool ignore;
-    uint8_t printTimer;
+    double startTime;
+    int startTimer;
+    bool stop = false;
 
-    unsigned long lTime;
-    double lastPulsesLeft;
-    double lastPulsesRight;
-
-    double travelPrPulse;
-    double lastLeftPulseCount;
-    double lastRightPulseCount;
-    double leftTravel;
-    double rightTravel;
+    int8_t reading;
+    int8_t lastReading;
+    double sensorOffset;
     uint8_t lCnt;
     uint8_t rCnt;
+    bool lineDetected = false;
 
-    double angleToLine;
-    point carToLine;
+    double leftPulseTime;
+    double leftLastPulseTime;
+    double rightPulseTime;
+    double travelPrPulse;
+    double leftTravel;
+    double rightTravel;
+    double rightLastPulseTime;
+    bool leftUpdated;
+    bool rightUpdated;
+    double pulseTimeThreshold;
+    double timeSinceLeftUpdate;
+    double timeSinceRightUpdate;
+
+    double lastPrintTime;
+    int printTimer;
+
+    int timer90deg;
+    double startTime90deg;
+    double cntStartTime;
+    bool ignore;
 
     double baseSpd;
-    int8_t minSpd;
-    int8_t maxSpd;
-
+    double PIDtimer;
+    double correction;
+    bool integrating;
     double leftMotorSpeed;
     double rightMotorSpeed;
 
+    double angleToLine;
+    double lastAngleDir;
+    double directionAngle;
+    point carToLine;
     point carPosition;
     vektor carPositionVector;
     point carDirection;
@@ -60,36 +75,29 @@ private:
     vektor linePositionvector;
     point carReferancePoint;
     point lineDir;
+    vektor refLength;
+    vektor refVector;
 
     static const int line_pos_size = 6;
     double linePositions[line_pos_size][2] = {{0,0},{0,0},{0,0},{0,0}};
-    int currentIndex = 0;
-    int counts = 0;
-    int8_t lastReading = 0;
-    bool isFull = false;
+    int currentIndex;
+    int counts;
     double slope;
     int cntTimer;
-    double cntStartTime;
 
-    bool lineLost;
-    double lastAngleDir;
-    double startTime;
-    double PIDtimer;
-    bool integrating;
-    double directionAngle;
-
-    bool stop = false;
-
-    PID anglePID;
+    bool printerIsFull = false;
 
     void readSensors();
     void updateTime();
     void calculateTravel();
+    void checkEncoderUpdates();
     void updatePosition();
     void setMotorSpeeds();
     void calculateAngle();
     void updateLinePositions(point newPosition);
     void lineRegression();
+    static double mimimillis();
+    void geogebraPrint();
 
 public:
     car(double baseSpeed, range& speedRange, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimensions, PIDparameters& kValues);
@@ -100,7 +108,9 @@ public:
     encoder &getRightEncoder();
     void travel1Left();
     void travel1Right();
-    bool stopp();
+    bool stopp() const;
+    void updateLeftRPM();
+    void updateRightRPM();
 };
 
 #endif //BILPROSJEKT_CAR_HPP

@@ -2,50 +2,55 @@
 
 car::car(double baseSpeed, range& speedRange, motorPins& leftMotorPins, motorPins& rightMotorPins, carDimesions& dimensions, PIDparameters& kValues)
         : leftMotor(leftMotorPins, speedRange), rightMotor(rightMotorPins, speedRange),
-          odometryModel(dimensions.width, dimensions.length),
-          dataPrinter(), carPositionVector(0.0, 0.0),
-          carDirectionVector(0.0, 1.0), linePositionvector(0.0,dimensions.length),
+          odometryModel(dimensions.width, dimensions.length), dataPrinter(),
+          carPositionVector(0.0, 0.0), carDirectionVector(0.0, 1.0),
+          linePositionvector(0.0,dimensions.length), refLength(7.5, 0.0), refVector(0, 7.5),
           currentIndex(0), anglePID(kValues.kP, kValues.kI, kValues.kD, kValues.windup) {
-    lastTime = millis();
-
-    lastLeftPulseCount = leftMotor.getPulses();
-    lastRightPulseCount = rightMotor.getPulses();
-    travelPrPulse = M_PI*dimensions.wheelDiameter/dimensions.pulsesInRotation;
     baseSpd = baseSpeed;
-    minSpd = speedRange.min;
-    maxSpd = speedRange.max;
-
-    linePosition.x = 0.0;
-    linePosition.y = dimensions.length;
-    sensorOffset = 44;
-    angleToLine = 0.0;
-    lineDir.x = 0.0;
-    lineDir.y = 1.0;
-    carDirection.x = 0.0;
-    carDirection.y = 0.0;
 
     leftMotor.setSpeed(0);
     rightMotor.setSpeed(0);
 
-    timer = 1000;
+    linePosition.x = 0.0;
+    linePosition.y = dimensions.length;
+    carDirection.x = 0.0;
+    carDirection.y = 1.0;
+    angleToLine = 0.0;
+    lastReading = 55;
+    reading = 0;
+
     started = false;
-    startTime = double(micros())/1000;
-    lTime = millis();
-    lastPulsesLeft = 0;
-    lastPulsesRight = 0;
-    printTimer = 20;
-    PIDtimer =100;
-    cntTimer = 0;
-    cntStartTime = double(micros())/1000;
     stop = false;
+    integrating = false;
+    lineDetected = true;
+
+    travelPrPulse = M_PI*dimensions.wheelDiameter/dimensions.pulsesInRotation;
+    pulseTimeThreshold = 50;
+
+    lastTime = mimimillis();
+    leftLastPulseTime = mimimillis();
+    rightLastPulseTime = mimimillis();
+    lastPrintTime = mimimillis();
+    startTime90deg = mimimillis();
+    leftPulseTime = 51;
+    rightPulseTime = 51;
+    startTimer = 1000;
+    timer90deg = 100;
+    PIDtimer =100;
+    printTimer = 10;
+
+    counts = 0;
+    ignore = false;
     lCnt = 0;
     rCnt = 0;
-    integrating = false;
-    ignore = false;
-    counts = 0;
+    cntStartTime = mimimillis();
+    cntTimer = 0;
+    lineDir.x = 0.0;
+    lineDir.y = 1.0;
 }
 
-bool car::stopp() {
+
+bool car::stopp() const {
     return stop;
 }
 
@@ -54,30 +59,161 @@ void car::run() {
     updateTime();
 
     if (!started) {
-        if (currentTime < startTime + timer) { return; }
+        if (currentTime < startTime + startTimer) { return; }
         else { started = true; }
     }
     if (!integrating) {
-        if (currentTime >= startTime + timer + PIDtimer) {
+        if (currentTime >= startTime + startTimer + PIDtimer) {
             anglePID.activateI();
             integrating = true;
         }
     }
 
-    if (lCnt >= 5 || rCnt >= 5) {
-        odometryModel.calculate(leftTravel, rightTravel);
+    checkEncoderUpdates();
+    calculateTravel();
+
+    odometryModel.calculate(leftTravel, rightTravel);
+    if (lineDetected) {
         odometryModel.calculateLine(sensorOffset);
-        updatePosition();
-        calculateAngle();
-        leftTravel = 0;
-        rightTravel = 0;
-        lCnt = 0;
-        rCnt = 0;
     }
+    updatePosition();
+    calculateAngle();
 
     setMotorSpeeds();
-    /*
-    if (currentTime >= lTime + printTimer) {
+
+    geogebraPrint();
+}
+
+void car::checkEncoderUpdates() {
+    timeSinceLeftUpdate = currentTime - leftLastPulseTime;
+    timeSinceRightUpdate = currentTime - rightLastPulseTime;
+
+    if (leftPulseTime < timeSinceLeftUpdate) {
+        leftPulseTime = timeSinceLeftUpdate;
+    } else {
+        leftUpdated = false;
+    }
+    if (rightPulseTime < timeSinceRightUpdate) {
+        rightPulseTime = timeSinceRightUpdate;
+    } else {
+        rightUpdated = false;
+    }
+}
+
+void car::calculateTravel() {
+    if (leftPulseTime > pulseTimeThreshold) {
+        leftTravel = 0;
+    } else {
+        leftTravel = travelPrPulse/leftPulseTime*dt;
+    }
+
+    if (rightPulseTime > pulseTimeThreshold) {
+        rightTravel = 0;
+    } else {
+        rightTravel = travelPrPulse/rightPulseTime*dt;
+    }
+}
+
+void car::updateLeftRPM() {
+    leftPulseTime = mimimillis() - leftLastPulseTime;
+    leftLastPulseTime = mimimillis();
+    leftUpdated = true;
+}
+void car::updateRightRPM() {
+    rightPulseTime = mimimillis() - rightLastPulseTime;
+    rightLastPulseTime = mimimillis();
+    rightUpdated = true;
+}
+
+void car::setMotorSpeeds() {
+    if (reading == -37) {
+        leftMotorSpeed = baseSpd;
+        rightMotorSpeed = -baseSpd;
+        startTime90deg = mimimillis();
+    } else if (reading == 37) {
+        leftMotorSpeed = -baseSpd;
+        rightMotorSpeed = baseSpd;
+        startTime90deg = mimimillis();
+    } else if (currentTime > startTime90deg + timer90deg) {
+        correction = anglePID.regulate(dt, 0, angleToLine);
+        //Serial.println(angleToLine);
+        if (correction < 0) {
+            leftMotorSpeed = constrain(baseSpd + correction, -0.2, 1);
+            rightMotorSpeed = baseSpd;
+        } else {
+            leftMotorSpeed = baseSpd;
+            rightMotorSpeed = constrain(baseSpd - correction, -0.2, 1);
+
+        }
+    }
+
+    leftMotor.setSpeed(leftMotorSpeed);
+    rightMotor.setSpeed(rightMotorSpeed);
+}
+
+void car::calculateAngle() {
+    refVector = refLength.rotate(directionAngle);
+    carReferancePoint.x = carPosition.x + refVector.x;
+    carReferancePoint.y = carPosition.y + refVector.y;
+
+    carToLine.x = linePosition.x-carReferancePoint.x;
+    carToLine.y = linePosition.y-carReferancePoint.y;
+
+    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
+
+    if (!lineDetected) {
+        if (lastAngleDir == 1 && angleToLine < 0) {
+            angleToLine += 2*M_PI;
+        } else if (lastAngleDir == -1 && angleToLine > 0) {
+            angleToLine -= 2*M_PI;
+        }
+    } else {
+        if (angleToLine >= 0) {
+            lastAngleDir = 1;
+        } else {
+            lastAngleDir = -1;
+        }
+    }
+}
+
+void car::updatePosition() {
+    carPositionVector.add(odometryModel.getDistanceTravelled());
+    carPosition.x = carPositionVector.x;
+    carPosition.y = carPositionVector.y;
+
+    if (lineDetected) {
+        linePositionvector = odometryModel.getLineDistance();
+        linePositionvector.add(carPositionVector);
+        linePosition.x = linePositionvector.x;
+        linePosition.y = linePositionvector.y;
+    }
+
+    directionAngle = odometryModel.getDirAngle();
+
+    carDirectionVector = odometryModel.getTrajectory();
+    carDirection.x = carDirectionVector.x;
+    carDirection.y = carDirectionVector.y;
+}
+
+void car::readSensors() {
+    lastReading = reading;
+    if (Serial.available() > 0) {
+        while (Serial.available() > 0) {
+            reading = int8_t(Serial.read());
+        }
+        if (reading == 44) {
+            lineDetected = false;
+        } else {
+            lineDetected = true;
+            sensorOffset = double(reading)/10;
+        }
+    }
+    //Serial.println(sensorOffset);
+    //Serial.println(reading);
+}
+
+void car::geogebraPrint() {
+    if (currentTime >= lastPrintTime + printTimer) {
         dataPrinter.setCarPosition(carPosition);
         dataPrinter.setCarAngle(directionAngle);
         dataPrinter.setLinePosition(linePosition);
@@ -91,88 +227,38 @@ void car::run() {
             Serial.print(" | ");
             dataPrinter.printPointList();
         }
-        lTime = currentTime;
-    }*/
-
-
-}
-
-void car::readSensors() {
-    lastReading = readings;
-    if (Serial.available() > 0) {
-        while (Serial.available() > 0) {
-            readings = Serial.read();
-        }
-        if (readings == 44) {
-            sensorOffset = readings;
-        } else {
-            double dbReadings = double(readings);
-            sensorOffset = -dbReadings/10;
-        }
-
+        lastPrintTime = currentTime;
     }
 }
-
-
-void car::setMotorSpeeds() {
-     if (readings == -37) {
-        leftMotor.setSpeed(baseSpd);
-        rightMotor.setSpeed(-baseSpd);
-        startTime = double(micros())/1000;
-    } else if (readings == 37) {
-        rightMotor.setSpeed(baseSpd);
-        leftMotor.setSpeed(-baseSpd);
-        startTime = double(micros())/1000;
-    } else {
-        if (abs(readings) != 37) {
-            double correction = anglePID.regulate(dt, 0, angleToLine);
-
-            if (correction < 0) {
-                leftMotorSpeed = constrain(baseSpd + correction, -0.2, 1);
-                rightMotorSpeed = baseSpd;
-            } else {
-                leftMotorSpeed = baseSpd;
-                rightMotorSpeed = constrain(baseSpd - correction, -0.2, 1);
-            }
-
-            leftMotor.setSpeed(leftMotorSpeed);
-            rightMotor.setSpeed(rightMotorSpeed);
-        }
-    }
+double car::mimimillis() {
+    return double(micros())/1000;
 }
 
-void car::calculateAngle() {
-    carReferancePoint.x = carPosition.x + carDirection.x*7.15;
-    carReferancePoint.y = carPosition.y + carDirection.y*7.15;
-
-    carToLine.x = linePosition.x-carReferancePoint.x;
-    carToLine.y = linePosition.y-carReferancePoint.y;
-
-    if (sensorOffset == 44) {
-        lineLost = true;
-    } else {
-        lineLost = false;
-    }
-
-    angleToLine = atan2(carDirection.x*carToLine.y-carDirection.y*carToLine.x, carDirection.x*carToLine.x + carDirection.y*carToLine.y);
-
-    if (lineLost) {
-        if (lastAngleDir == 1 && angleToLine < 0) {
-            angleToLine += 2*M_PI;
-        } else if (lastAngleDir == -1 && angleToLine > 0) {
-                angleToLine -= 2*M_PI;
-        }
-    } else {
-        if (angleToLine >= 0) {
-            lastAngleDir = 1;
-        } else {
-            lastAngleDir = -1;
-        }
-    }
+void car::updateTime() {
+    currentTime = mimimillis();
+    dt = currentTime - lastTime;
+    lastTime = currentTime;
 }
 
-/*void car::counter() {
-    if (abs(readings) == 37 && abs(lastReading) != 37) {
+encoder& car::getLeftEncoder() {
+    return leftMotor.getEncoder();
+}
+
+encoder &car::getRightEncoder() {
+    return rightMotor.getEncoder();
+}
+
+void car::travel1Left() {
+    leftTravel += travelPrPulse;
+    lCnt += 1;
+}
+void car::travel1Right() {
+    rightTravel += travelPrPulse;
+    rCnt += 1;
+}
+
+void car::counter() {
+    if (abs(reading) == 37 && abs(lastReading) != 37) {
         if (currentTime > cntStartTime + cntTimer) {
             cntTimer = 300;
             cntStartTime = double(micros())/1000;
@@ -205,39 +291,11 @@ void car::calculateAngle() {
             }
         }
     }
-} */
-
-encoder& car::getLeftEncoder() {
-    return leftMotor.getEncoder();
-}
-
-encoder &car::getRightEncoder() {
-    return rightMotor.getEncoder();
-}
-
-
-void car::updatePosition() {
-    carPositionVector.add(odometryModel.getDistanceTravelled());
-    carPosition.x = carPositionVector.x;
-    carPosition.y = carPositionVector.y;
-
-    linePositionvector = odometryModel.getLineDistance();
-    if (linePositionvector.x != 44) {
-        linePositionvector.add(carPositionVector);
-        linePosition.x = linePositionvector.x;
-        linePosition.y = linePositionvector.y;
-    }
-
-    directionAngle = odometryModel.getDirAngle();
-
-    carDirectionVector = odometryModel.getTrajectory();
-    carDirection.x = carDirectionVector.x;
-    carDirection.y = carDirectionVector.y;
 }
 
 void car::updateLinePositions(point newPosition) {
     if (currentIndex >= line_pos_size-1) {
-        isFull = true;
+        printerIsFull = true;
         for (int8_t i = 0; i < line_pos_size; i++) {
             linePositions[i][0] = linePositions[i + 1][0];
             linePositions[i][1] = linePositions[i + 1][1];
@@ -252,7 +310,7 @@ void car::updateLinePositions(point newPosition) {
 }
 
 void car::lineRegression() {
-    if (!isFull) {
+    if (!printerIsFull) {
         return;
     }
 
@@ -278,59 +336,4 @@ void car::lineRegression() {
     lineDir.y = slope/(sqrt(1+slope*slope));
 }
 
-void car::updateTime() {
-    currentTime = double(micros())/1000;
-    dt = currentTime - lastTime;
-    lastTime = currentTime;
-}
-
-void car::travel1Left() {
-    leftTravel += travelPrPulse;
-    lCnt += 1;
-}
-
-void car::travel1Right() {
-    rightTravel += travelPrPulse;
-    rCnt += 1;
-}
-void car::speedTest() {
-    updateTime();
-
-
-    if (currentTime < startTime + timer || stop) {
-        return;
-    } else if (currentTime < startTime + 2*timer) {
-        baseSpd = 30;
-    } else if (currentTime < startTime + 3*timer) {
-        baseSpd = 40;
-    } else if (currentTime < startTime + 3*timer) {
-        baseSpd = 50;
-    } else if (currentTime < startTime + 4*timer) {
-        baseSpd = 70;
-    } else if (currentTime < startTime + 5*timer) {
-        baseSpd = 90;
-    } else if (currentTime < startTime + 6*timer) {
-        baseSpd = 120;
-    } else if (currentTime < startTime + 7*timer) {
-        stop = true;
-    }
-
-    rightMotor.setSpeed(baseSpd);
-    leftMotor.setSpeed(baseSpd);
-
-
-    if (currentTime >= lTime + 100) {
-        double deltaLeft = (leftMotor.getPulses() - lastPulsesLeft);
-        double deltaRight = (rightMotor.getPulses() - lastPulsesRight);
-        Serial.print("(");
-        Serial.print(baseSpd);
-        Serial.print(", ");
-        Serial.print(deltaLeft/deltaRight);
-        Serial.print("), ");
-        lTime = currentTime;
-        lastPulsesLeft = leftMotor.getPulses();
-        lastPulsesRight = rightMotor.getPulses();
-    }
-
-}
 // pio device monitor --port /dev/cu.usbserial-10 --baud 9600

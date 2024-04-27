@@ -19,6 +19,7 @@ private:
     float lineX[numPoints];
     float lineY[numPoints];
     float angle[numPoints];
+
     int8_t cntC;
     int8_t cntL;
     int8_t cntD;

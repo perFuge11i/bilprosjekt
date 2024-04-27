@@ -51,12 +51,8 @@ void odometry::calculate(const double& leftWheelTravel, const double& rightWheel
 }
 
 void odometry::calculateLine(const double sensorOffset) {
-    if (sensorOffset == 44) {
-         lineDistance.setValues(44,44);
-    } else {
-        lineDistance.setValues(length,-sensorOffset);
-        lineDistance = lineDistance.rotate(dirAngle);
-    }
+    lineDistance.setValues(length,-sensorOffset);
+    lineDistance = lineDistance.rotate(dirAngle);
 }
 
 vektor& odometry::getDistanceTravelled() {
@@ -71,6 +67,6 @@ vektor& odometry::getLineDistance() {
     return lineDistance;
 }
 
-double odometry::getDirAngle() {
+double odometry::getDirAngle() const {
     return dirAngle;
 }

@@ -11,10 +11,10 @@ private:
 
     double dirAngle;
 
-    double r;
-    double pathAngle;
     double dInner;
     double dOuter;
+    double r;
+    double pathAngle;
 
     vektor trajectory;
     vektor distanceTraveled;
@@ -29,7 +29,7 @@ public:
     vektor& getDistanceTravelled();
     vektor& getTrajectory();
     vektor& getLineDistance();
-    double getDirAngle();
+    double getDirAngle() const;
 };
 
 #endif //BILPROSJEKT_ODOMETRY_HPP
