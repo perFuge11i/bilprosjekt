@@ -31,11 +31,9 @@ void setup() {
 }
 
 void loop() {
-    Serial.println(theCar.getRightEncoder().getCount());
-    /*
     if (!theCar.stopp()) {
         theCar.run();
-    }*/
+    }
 }
 
 // pio device monitor --port /dev/cu.usbserial-10 --baud 115200
