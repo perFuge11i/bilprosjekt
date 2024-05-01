@@ -1,14 +1,14 @@
 #include "motor.hpp"
 
 motor::motor(motorPins& pins, range& speedRange) : motorEncoder(pins.encoderPin) {
-    PMWpin = pins.PMWpin;
+    PWMpin = pins.PMWpin;
     dirPin1 = pins.dirPin1;
     dirPin2 = pins.dirPin2;
 
     minSpd = speedRange.min;
     maxSpd = speedRange.max;
 
-    pinMode(PMWpin, INPUT);
+    pinMode(PWMpin, OUTPUT);
     pinMode(dirPin1, OUTPUT);
     pinMode(dirPin2, OUTPUT);
 
@@ -16,7 +16,7 @@ motor::motor(motorPins& pins, range& speedRange) : motorEncoder(pins.encoderPin)
 }
 
 void motor::stop() {
-    analogWrite(PMWpin, 0);
+    analogWrite(PWMpin, 0);
 }
 
 void motor::frwrd() {
@@ -30,7 +30,6 @@ void motor::bckwrd() {
 }
 
 void motor::setSpeed(double speed) {
-
     speedSignal = int((abs(speed)*(maxSpd-minSpd)+minSpd));
 
     if (speed < 0) {
@@ -43,7 +42,7 @@ void motor::setSpeed(double speed) {
         speedSignal = 0;
     }
 
-    analogWrite(PMWpin, speedSignal);
+    analogWrite(PWMpin, speedSignal);
 }
 
 double motor::getPulses() const {

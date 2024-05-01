@@ -1,114 +1,99 @@
 #include "printer.hpp"
 
 printer::printer() {
-    doc["carX"] = 0;
-    doc["carY"] = 0;
-    doc["carDirX"] = 0;
-    doc["carDirY"] = 0;
-    doc["lineX"] = 0;
-    doc["lineY"] = 0;
-    doc["lineDirX"] = 0;
-    doc["lineDirY"] = 0;
-    cntC = 0;
-    cntL = 0;
-    cntD = 0;
+    carBase = SD.open("carBase.txt", FILE_WRITE);
+    carFront = SD.open("carFront.txt", FILE_WRITE);
+    line = SD.open("line.txt", FILE_WRITE);
+    curve = SD.open("curveError.txt", FILE_WRITE);
+
+    carBase.println("bilenBak = {");
+    carFront.println("bilenFremme = {");
+    line.println("linjen = {");
+    curve.println("curvyness = {");
+
+    cntBase = 0;
+    cntFront = 0;
+    cntLine = 0;
+    cntCurve = 0;
     full = false;
 }
 
-void printer::setCarPosition(point &carPosition) {
-    cX = carPosition.x;
-    cY = carPosition.y;
-    doc["carX"] = cX;
-    doc["carY"] = cY;
-    if (cntC < numPoints) {
-        carX[cntC] = float(cX);
-        carY[cntC] = float(cY);
-        cntC += 1;
+void printer::writeCarPosition(point &carPosition) {
+    cpx = carPosition.x;
+    cpy = carPosition.y;
+    carBase.print("(");
+    carBase.print(carPosition.x);
+    carBase.print(", ");
+    carBase.print(carPosition.y);
+    carBase.print(")");
+    if (cntBase < maxCnt) {
+        carBase.print(", ");
     } else {
+        carBase.print("}");
         full = true;
     }
+
+    cntBase++;
 }
 
-void printer::setCarAngle(double angle_) {
-    doc["carDir"] = angle_;
-    if (cntD < numPoints) {
-        angle[cntD] = float(angle_);
-        cntD += 1;
+void printer::writeCarFront(double angle) {
+    vektor lengde(12.2,0.0);
+    lengde = lengde.rotate(angle);
+
+    carFront.print("(");
+    carFront.print(cpx + lengde.x);
+    carFront.print(", ");
+    carFront.print(cpy + lengde.x);
+    carFront.print(")");
+    if (cntFront < maxCnt) {
+        carFront.print(", ");
     } else {
+        carFront.print("}");
         full = true;
     }
+
+    cntFront++;
 }
 
-void printer::setLinePosition(point &linePosition) {
-    lX = linePosition.x;
-    lY = linePosition.y;
-    doc["lineX"] = lX;
-    doc["lineY"] = lY;
-    if (cntL < numPoints) {
-        lineX[cntL] = float(lX);
-        lineY[cntL] = float(lY);
-        cntL += 1;
+void printer::writeLinePosition(point &linePosition) {
+    line.print("(");
+    line.print(linePosition.x);
+    line.print(", ");
+    line.print(linePosition.y);
+    line.print(")");
+    if (cntLine < maxCnt) {
+        line.print(", ");
     } else {
+        line.print("}");
         full = true;
     }
+
+    cntLine++;
 }
 
-bool printer::isFull() const {
+void printer::writeCurveError(double curveError) {
+    curve.print("(");
+    curve.print(cntCurve+1);
+    curve.print(", ");
+    curve.print(curveError);
+    curve.print(")");
+    if (cntCurve < maxCnt) {
+        curve.print(", ");
+    } else {
+        curve.print("}");
+        full = true;
+    }
+
+    cntCurve++;
+}
+
+void printer::closeDocuments() {
+    carBase.close();
+    carFront.close();
+    line.close();
+    curve.close();
+}
+
+bool printer::isFull() {
     return full;
-}
-
-void printer::setLineDirection(point &lineDirection) {
-    doc["lineDirX"] = lineDirection.x;
-    doc["lineDirY"] = lineDirection.y;
-}
-
-void printer::print() {
-    serializeJson(doc, Serial);
-    Serial.println();
-    delay(100);
-}
-
-void printer::printPointList() {
-    Serial.println();
-    Serial.print("Bilen = {");
-    for (int8_t i = 0; i < cntC; i++) {
-        Serial.print("(");
-        Serial.print(carX[i]);
-        Serial.print(", ");
-        Serial.print(carY[i]);
-        Serial.print(")");
-        if (i+1 != cntC) {
-            Serial.print(", ");
-        }
-    }
-    Serial.print("}");
-    Serial.println();
-    Serial.print("Fremme = {");
-    for (int8_t i = 0; i < cntD; i++) {
-        vektor lengde(12.2,0.0);
-        lengde = lengde.rotate(angle[i]);
-        Serial.print("(");
-        Serial.print(carX[i] + lengde.x);
-        Serial.print(", ");
-        Serial.print(carY[i] + lengde.y);
-        Serial.print(")");
-        if (i+1 != cntD) {
-            Serial.print(", ");
-        }
-    }
-    Serial.print("}");
-    Serial.println();
-    Serial.print("Linjen = {");
-    for (int8_t i = 0; i < cntL; i++) {
-        Serial.print("(");
-        Serial.print(lineX[i]);
-        Serial.print(", ");
-        Serial.print(lineY[i]);
-        Serial.print(")");
-        if (i+1 != cntL) {
-            Serial.print(", ");
-        }
-    }
-    Serial.print("}");
-    Serial.println();
 }

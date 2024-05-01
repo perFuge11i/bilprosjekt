@@ -2,13 +2,14 @@
 #define BILPROSJEKT_MOTOR_HPP
 
 #include <Arduino.h>
+
 #include "encoder.hpp"
 #include "structures.hpp"
 
 class motor {
 private:
     encoder motorEncoder;
-    uint8_t PMWpin;
+    uint8_t PWMpin;
     uint8_t speedSignal;
     uint8_t minSpd;
     uint8_t maxSpd;

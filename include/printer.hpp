@@ -5,33 +5,33 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "vektor.hpp"
-const int numPoints = 50;
+#include "SPI.h"
+#include "SD.h"
 
 class printer{
 private:
+    File carBase;
+    File carFront;
+    File line;
+    File curve;
     JsonDocument doc;
-    double cX;
-    double cY;
-    double lX;
-    double lY;
-    float carX[numPoints];
-    float carY[numPoints];
-    float lineX[numPoints];
-    float lineY[numPoints];
-    float angle[numPoints];
+    unsigned long cntBase;
+    unsigned long cntFront;
+    unsigned long cntLine;
+    unsigned long cntCurve;
+    unsigned long maxCnt = 200;
 
-    int8_t cntC;
-    int8_t cntL;
-    int8_t cntD;
+    double cpx;
+    double cpy;
+
     bool full;
 public:
     printer();
-    void setCarPosition(point& carPosition);
-    void setCarAngle(double angle);
-    void setLinePosition(point& linePosition);
-    void setLineDirection(point& lineDirection);
-    void print();
-    void printPointList();
-    bool isFull() const;
+    void writeCarPosition(point& carPosition);
+    void writeLinePosition(point& linePosition);
+    void writeCarFront(double angle);
+    void writeCurveError(double curveError);
+    void closeDocuments();
+    bool isFull();
 };
 #endif //BILPROSJEKT_PRINTER_HPP
